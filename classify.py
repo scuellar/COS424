@@ -15,7 +15,7 @@ add_label = lambda lst, lab: [(x, lab) for x in lst]
 
 import justTry
 
-all_w, per = justTry.getWords(10000)
+all_w, per = justTry.getWords(100000)
 
 print len(per[0]), len(per[1]), len(per[2]), len(per[3]), len(per[4]), 
 
@@ -31,6 +31,7 @@ threes = [FreqDist(x) for x in per[2]]
 fours = [FreqDist(x) for x in per[3]]
 fives = [FreqDist(x) for x in per[4]]
 
+print "Starting to train"
 classif.train(add_label(ones[:train1], '1') + add_label(twos[:train2], '2') + add_label(threes[:train3], '3') + add_label(fours[:train4], '4') + add_label(fives[:train5], '5')) 
 print "Done learning"
 l_ones = np.array(classif.batch_classify(ones[train1:]))
