@@ -1,11 +1,6 @@
-580.7268815923588
-657.8565990886929
-747.5089198036075
-841.2477020818736
-821.5981108630444
-
 import json
 from pprint import pprint
+
 
 json_data=open('yelp/yelp_academic_dataset_review.json')
 lines0 = json_data.readlines()
@@ -42,14 +37,6 @@ import matplotlib.pyplot as plt
 import scipy.stats as ss
 import scipy as sp
 
-#data_to_plot = data_all #data_all, data[i]
-#hist_to_plot = data_hist_all #data_hist_all, data_hist[i]
-
-#length_to_plot = len(data_to_plot)
-#print "beta fit: ", ss.beta.fit(data_all)
-fit_alpha = [ 0 for _ in range(5)]
-fit_loc  = [ 0 for _ in range(5)] 
-fit_beta = [ 0 for _ in range(5)]
 length_to_plot = len(data[0])
 for i in range(5):
     fit_alpha[i], fit_loc[i], fit_beta[i] = ss.gamma.fit(data[i], loc=0)
