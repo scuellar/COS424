@@ -6,9 +6,10 @@ from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
-pipeline = Pipeline([('tfidf', TfidfTransformer()),
-                     ('chi2', SelectKBest(chi2, k=1000)),
-                     ('nb', MultinomialNB())])
+#pipeline = Pipeline([('tfidf', TfidfTransformer()),
+#                     ('chi2', SelectKBest(chi2, k=1000)),
+#                     ('nb', MultinomialNB())])
+pipeline = Pipeline([('nb', MultinomialNB())])
 classif = SklearnClassifier(pipeline)
 
 #from nltk.corpus import movie_reviews
@@ -21,8 +22,13 @@ import justTry
 
 all_w, per = justTry.getWords()
 
-train = (9*len(per))/10
-test = len(per) - train
+print len(per[0]), len(per[1]), len(per[2]), len(per[3]), len(per[4]), 
+
+train1 = (9*len(per[0]))/10
+train2 = (9*len(per[1]))/10
+train3 = (9*len(per[2]))/10
+train4 = (9*len(per[3]))/10
+train5 = (9*len(per[4]))/10
 
 ones = [FreqDist(x) for x in per[0]]
 twos = [FreqDist(x) for x in per[1]]
@@ -30,13 +36,13 @@ threes = [FreqDist(x) for x in per[2]]
 fours = [FreqDist(x) for x in per[3]]
 fives = [FreqDist(x) for x in per[4]]
 
-classif.train(add_label(ones[:train], '1') + add_label(twos[:train], '2') + add_label(threes[:train], '3') + add_label(fours[:train], '4') + add_label(fives[:train], '5')) 
+classif.train(add_label(ones[:train1], '1') + add_label(twos[:train2], '2') + add_label(threes[:train3], '3') + add_label(fours[:train4], '4') + add_label(fives[:train5], '5')) 
 
-l_ones = np.array(classif.batch_classify(ones[train:]))
-l_twos = np.array(classif.batch_classify(twos[train:]))
-l_threes = np.array(classif.batch_classify(threes[train:]))
-l_fours = np.array(classif.batch_classify(fours[train:]))
-l_fives = np.array(classif.batch_classify(fives[train:]))
+l_ones = np.array(classif.batch_classify(ones[train1:]))
+l_twos = np.array(classif.batch_classify(twos[train2:]))
+l_threes = np.array(classif.batch_classify(threes[train3:]))
+l_fours = np.array(classif.batch_classify(fours[train4:]))
+l_fives = np.array(classif.batch_classify(fives[train5:]))
 print "Confusion matrix:\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n" % (
           (l_ones == '1').sum(), (l_ones == '2').sum(), (l_ones == '3').sum(), (l_ones == '4').sum(), (l_ones == '5').sum(),
           (l_twos == '1').sum(), (l_twos == '2').sum(), (l_twos == '3').sum(), (l_twos == '4').sum(), (l_twos == '5').sum(),
