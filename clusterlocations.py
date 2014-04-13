@@ -50,4 +50,5 @@ with open('finland.txt') as finfile:
     fig, ax = plt.subplots()
     plt.xlim([200000, 340000])
     ax.scatter(newdata[1], newdata[0], c=newdata[2])
-    plt.show()
+    plt.savefig("fig.png")
+    #plt.show()
