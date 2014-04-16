@@ -1,7 +1,3 @@
-
-
-import readYelp
-
 GOOD_FOR = ["dessert", "latenight", "lunch", "dinner", "brunch", "breakfast"]
 G4SIZE = len(GOOD_FOR)
 AMBIENCE = ["romantic", "intimate", "touristy", "hipster", "divey", "classy", "trendy", "upscale", "casual"]
