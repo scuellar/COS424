@@ -21,8 +21,7 @@ def getUserReviews(i=0):
     per = userReview.reviewsPerUser(d)
     return per
     
-def crossUserReviewsBus(i=0):
-    BOUND = 10
+def crossUserReviewsBus(k=15, i=0):
     d_user = getUserReviews(i)
     d_buss = getBusVector(i)
     output = {}
@@ -33,9 +32,9 @@ def crossUserReviewsBus(i=0):
                 to_delete.append(buss)
         for buss in to_delete:
             del d_user[user][buss]
-        if len(d_user[user])>=15:
+        if len(d_user[user])>=k:
             output[user] = d_user[user]
-    return output
+    return (output, d_buss)
 
 
 #n,d = getBusVector(100)
