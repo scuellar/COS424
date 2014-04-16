@@ -9,13 +9,14 @@ from sklearn.pipeline import Pipeline
 #pipeline = Pipeline([('tfidf', TfidfTransformer()),
 #                     ('chi2', SelectKBest(chi2, k=1000)),
 #                     ('nb', MultinomialNB())])
+#classif = SklearnClassifier(pipeline)
 classif = SklearnClassifier(MultinomialNB())
 
 add_label = lambda lst, lab: [(x, lab) for x in lst]
 
 import justTry
 
-all_w, per = justTry.getWords(100000)
+all_w, per = justTry.getWords(0)
 
 print len(per[0]), len(per[1]), len(per[2]), len(per[3]), len(per[4]), 
 
@@ -45,10 +46,25 @@ print "four done"
 l_fives = np.array(classif.batch_classify(fives[train5:]))
 print "five done"
 
+con_ma = [[(l_ones == '1').sum(), (l_ones == '2').sum(), (l_ones == '3').sum(), (l_ones == '4').sum(), (l_ones == '5').sum()],
+          [(l_twos == '1').sum(), (l_twos == '2').sum(), (l_twos == '3').sum(), (l_twos == '4').sum(), (l_twos == '5').sum()],
+          [(l_threes == '1').sum(), (l_threes == '2').sum(), (l_threes == '3').sum(), (l_threes == '4').sum(), (l_threes == '5').sum()],
+          [(l_fours == '1').sum(), (l_fours == '2').sum(), (l_fours == '3').sum(), (l_fours == '4').sum(), (l_fours == '5').sum()],
+          [(l_fives == '1').sum(), (l_fives == '2').sum(), (l_fives == '3').sum(), (l_fives == '4').sum(), (l_fives == '5').sum()]]
 
 print "Confusion matrix:\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n%d\t%d\t%d\t%d\t%d\n" % (
-          (l_ones == '1').sum(), (l_ones == '2').sum(), (l_ones == '3').sum(), (l_ones == '4').sum(), (l_ones == '5').sum(),
-          (l_twos == '1').sum(), (l_twos == '2').sum(), (l_twos == '3').sum(), (l_twos == '4').sum(), (l_twos == '5').sum(),
-          (l_threes == '1').sum(), (l_threes == '2').sum(), (l_threes == '3').sum(), (l_threes == '4').sum(), (l_threes == '5').sum(),
-          (l_fours == '1').sum(), (l_fours == '2').sum(), (l_fours == '3').sum(), (l_fours == '4').sum(), (l_fours == '5').sum(),
-          (l_fives == '1').sum(), (l_fives == '2').sum(), (l_fives == '3').sum(), (l_fives == '4').sum(), (l_fives == '5').sum())
+          con_ma[0][0],con_ma[0][1],con_ma[0][2],con_ma[0][3],con_ma[0][4],
+          con_ma[1][0],con_ma[1][1],con_ma[1][2],con_ma[1][3],con_ma[1][4],
+          con_ma[2][0],con_ma[2][1],con_ma[2][2],con_ma[2][3],con_ma[2][4],
+          con_ma[3][0],con_ma[3][1],con_ma[3][2],con_ma[3][3],con_ma[3][4],
+          con_ma[4][0],con_ma[4][1],con_ma[4][2],con_ma[4][3],con_ma[4][4])
+
+print " "
+good = con_ma[0][0]+con_ma[1][1]+con_ma[2][2]+con_ma[3][3]+con_ma[4][4]
+partial = [sum(l) for l in con_ma]
+total = sum(partial)
+print "Accuracy: ", float(good)/total
+print " "
+print con_ma
+
+
