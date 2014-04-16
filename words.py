@@ -12,9 +12,10 @@ def bagOfWords(dic):
     for n,review in enumerate(dic):
         stars = review["stars"]
         words = getListWords(review["text"])
+        #words = [word for word in words if len(word)>2]
         per_ratting_list[stars - 1].append(words)
         #list_of_all_words = list_of_all_words + words
-        if n>0 and n%1000==0:
+        if n>0 and n%50000==0:
             print n," reviews processed..."
     print "Done extracting words."
     return (list_of_all_words, per_ratting_list)
