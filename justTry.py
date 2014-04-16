@@ -21,20 +21,22 @@ def getUserReviews(i=0):
     per = userReview.reviewsPerUser(d)
     return per
     
+#output = dic{user_id -> dic{bus_id -> stars}}
+#d_bus = dic{bus_id -> FV}
 def crossUserReviewsBus(k=15, i=0):
     d_user = getUserReviews(i)
-    d_buss = getBusVector(i)
+    d_bus = getBusVector(i)
     output = {}
     for user in d_user:
-        for buss in d_user[user]:
+        for bus in d_user[user]:
             to_delete = []
-            if not buss in d_buss:
-                to_delete.append(buss)
+            if not bus in d_bus:
+                to_delete.append(bus)
         for buss in to_delete:
-            del d_user[user][buss]
+            del d_user[user][bus]
         if len(d_user[user])>=k:
             output[user] = d_user[user]
-    return (output, d_buss)
+    return (output, d_bus)
 
 
 #n,d = getBusVector(100)
