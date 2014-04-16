@@ -39,7 +39,7 @@ def busFeatureVector(dic):
                 vector[i+G4SIZE+1] = int(vec_entry)
             if not flag:
                 busFVs[ID] = vector
-        if n>0 and n%50000==0:
+        if n>0 and n%5000==0:
             print n," business processed..."
     print "Done extracting business vectors."
     return (len(busFVs), busFVs)

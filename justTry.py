@@ -25,9 +25,9 @@ def crossUserReviewsBus(k=15, i=0):
     d_user = getUserReviews(i)
     (n, d_buss) = getBusVector(i)
     output = {}
-    for user in d_user:
-        for buss in d_user[user]:
-            to_delete = []
+    for user, revs in d_user.iteritems():
+        to_delete = []
+        for buss in revs:
             if not buss in d_buss:
                 to_delete.append(buss)
         for buss in to_delete:
