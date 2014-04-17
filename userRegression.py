@@ -2,6 +2,20 @@ from sklearn.linear_model import LinearRegression, Lasso, Ridge
 import justTry
 import displayRegression
 
+def fitprederr(classifier, xtrain, ytrain, xtest, ytest):
+    classifier.fit(xtrain, ytrain)
+    
+    predictions = classifier.predict(xtest)
+    
+    sqerrors = [(test - pred)**2 for test, pred in zip(ytest, predictions)]
+    sqerror = sum(sqerrors)/float(len(sqerrors))
+    
+    abserrors = [abs(test - pred) for test, pred in zip(ytest, predictions)]
+    abserror = sum(abserrors)/float(len(abserrors))
+    
+    return (sqerror, abserror)
+    
+
 users, businesses = justTry.crossUserReviewsBus(k=200)
 
 linearsq = []
@@ -14,73 +28,117 @@ ridgeabs = []
 
 for i, user in zip(range(0, len(users.keys())), users.keys()):
     ratedbusinesses = users[user]
+
+    split = 4*(len(ratedbusinesses.values())/5)
+    
+    y = ratedbusinesses.values()[:split]
+    x = [businesses[bus_id] for bus_id in ratedbusinesses.keys()][:split]
+    
+    cvlinearsq = []
+    cvlinearabs = []
+    cvlassosq = []
+    cvlassoabs = []
+    cvridgesq = []
+    cvridgeabs = []
+
+    for j in range(0, 4):
+        xtrain = [x[k] for k in range(0, len(x)) if k%4!=j]
+        xtest = [x[k] for k in range(0, len(x)) if k%4==j]
+        
+        ytrain = [y[k] for k in range(0, len(y)) if k%4!=j]
+        ytest = [y[k] for k in range(0, len(y)) if k%4==j]
+
+        lreg = LinearRegression()
+        lasso = Lasso()
+        ridge = Ridge()
+    
+        cvlinsqerror, cvlinabserror = fitprederr(lreg, xtrain, ytrain, xtest, ytest)
+        cvlassqerror, cvlasabserror = fitprederr(lasso, xtrain, ytrain, xtest, ytest)
+        cvridsqerror, cvridabserror = fitprederr(ridge, xtrain, ytrain, xtest, ytest)
+
+        cvlinearsq.append(cvlinsqerror)
+        cvlinearabs.append(cvlinabserror)
+        cvlassosq.append(cvlassqerror)
+        cvlassoabs.append(cvlasabserror)
+        cvridgesq.append(cvridsqerror)
+        cvridgeabs.append(cvridabserror)
+
+    
+    linsqerror = sum(cvlinearsq)/float(len(cvlinearsq))
+    linabserror = sum(cvlinearabs)/float(len(cvlinearabs))
+    lassqerror = sum(cvlassosq)/float(len(cvlassosq))
+    lasabserror = sum(cvlassoabs)/float(len(cvlassoabs))
+    ridsqerror = sum(cvridgesq)/float(len(cvridgesq))
+    ridabserror = sum(cvridgeabs)/float(len(cvridgeabs))
+
+    linearsq.append(linsqerror)
+    linearabs.append(linabserror)
+    lassosq.append(lassqerror)
+    lassoabs.append(lasabserror)
+    ridgesq.append(ridsqerror)
+    ridgeabs.append(ridabserror)
+    
+linsqerror = sum(linearsq)/float(len(linearsq))
+linabserror = sum(linearabs)/float(len(linearabs))
+print "CV: Avg Linear:", linsqerror, linabserror
+
+lassqerror = sum(lassosq)/float(len(lassosq))
+lasabserror = sum(lassoabs)/float(len(lassoabs))
+print "CV: Avg Lasso:", lassqerror, lasabserror
+
+ridsqerror = sum(ridgesq)/float(len(ridgesq))
+ridabserror = sum(ridgeabs)/float(len(ridgeabs))
+print "CV: Avg Ridge:", ridsqerror, ridabserror
+
+linearsq = []
+linearabs = []
+lassosq = []
+lassoabs = []
+ridgesq = []
+ridgeabs = []
+
+for i, user in zip(range(0, len(users.keys())), users.keys()):
+    ratedbusinesses = users[user]
     
     y = ratedbusinesses.values()
     x = [businesses[bus_id] for bus_id in ratedbusinesses.keys()]
 
 
-    split=int(9*len(y))/10
-    
-    ytrain = y[:split]
-    ytest = y[split:]
+    split = 4*(len(x)/5)
     
     xtrain = x[:split]
     xtest = x[split:]
     
+    ytrain = y[:split]
+    ytest = y[split:]
+
     lreg = LinearRegression()
-    lreg.fit(xtrain, ytrain, n_jobs=-1)
-    
     lasso = Lasso()
-    lasso.fit(xtrain, ytrain)
-    
     ridge = Ridge()
-    ridge.fit(xtrain, ytrain)
     
-    lregpredictions = lreg.predict(xtest)
-    lassopredictions = lasso.predict(xtest)
-    ridgepredictions = ridge.predict(xtest)
-    
-    sqerrors = [(test - pred)**2 for test, pred in zip(ytest, lregpredictions)]
-    sqerror = sum(sqerrors)/float(len(sqerrors))
-    
-    abserrors = [abs(test - pred) for test, pred in zip(ytest, lregpredictions)]
-    abserror = sum(abserrors)/float(len(abserrors))
-    
-    linearsq.append(sqerror)
-    linearabs.append(abserror)
-    print i, "Linear:", sqerror, abserror
-    
-    sqerrors = [(test - pred)**2 for test, pred in zip(ytest, lassopredictions)]
-    sqerror = sum(sqerrors)/float(len(sqerrors))
-    
-    abserrors = [abs(test - pred) for test, pred in zip(ytest, lassopredictions)]
-    abserror = sum(abserrors)/float(len(abserrors))
-    
-    lassosq.append(sqerror)
-    lassoabs.append(abserror)
-    print i, "Lasso:", sqerror, abserror
-    
-    sqerrors = [(test - pred)**2 for test, pred in zip(ytest, ridgepredictions)]
-    sqerror = sum(sqerrors)/float(len(sqerrors))
-    
-    abserrors = [abs(test - pred) for test, pred in zip(ytest, ridgepredictions)]
-    abserror = sum(abserrors)/float(len(abserrors))
-    
-    ridgesq.append(sqerror)
-    ridgeabs.append(abserror)
-    print i, "Ridge:", sqerror, abserror
+    linsqerror, linabserror = fitprederr(lreg, xtrain, ytrain, xtest, ytest)
+    linearsq.append(linsqerror)
+    linearabs.append(linabserror)
 
-sqerror = sum(linearsq)/float(len(linearsq))
-abserror = sum(linearabs)/float(len(linearabs))
-print "Avg Linear:", sqerror, abserror
+    lassqerror, lasabserror = fitprederr(lasso, xtrain, ytrain, xtest, ytest)
+    lassosq.append(lassqerror)
+    lassoabs.append(lasabserror)
 
-sqerror = sum(lassosq)/float(len(lassosq))
-abserror = sum(lassoabs)/float(len(lassoabs))
-print "Avg Lasso:", sqerror, abserror
+    ridsqerror, ridabserror = fitprederr(ridge, xtrain, ytrain, xtest, ytest)
+    ridgesq.append(ridsqerror)
+    ridgeabs.append(ridabserror)
 
-sqerror = sum(ridgesq)/float(len(ridgesq))
-abserror = sum(ridgeabs)/float(len(ridgeabs))
-print "Avg Ridge:", sqerror, abserror
+linsqerror = sum(linearsq)/float(len(linearsq))
+linabserror = sum(linearabs)/float(len(linearabs))
+print "Test: Avg Linear:", linsqerror, linabserror
+
+lassqerror = sum(lassosq)/float(len(lassosq))
+lasabserror = sum(lassoabs)/float(len(lassoabs))
+print "Test: Avg Lasso:", lassqerror, lasabserror
+
+ridsqerror = sum(ridgesq)/float(len(ridgesq))
+ridabserror = sum(ridgeabs)/float(len(ridgeabs))
+print "Test: Avg Ridge:", ridsqerror, ridabserror
 
 
 displayRegression.displayRegression(linearsq, ridgesq, lassosq)
