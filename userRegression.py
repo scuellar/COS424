@@ -156,8 +156,8 @@ ridsqerror = sum(ridgesq)/float(len(ridgesq))
 ridabserror = sum(ridgeabs)/float(len(ridgeabs))
 print "Test: Avg Ridge:", ridsqerror, ridabserror
 
-dumbsqerror = sum(dumbridgesq)/float(len(dumbridgesq))
-dumbabserror = sum(dumbridgeabs)/float(len(dumbridgeabs))
+dumbsqerror = sum(dumbsq)/float(len(dumbsq))
+dumbabserror = sum(dumbabs)/float(len(dumbabs))
 print "Test: Avg Dumb:", dumbsqerror, dumbabserror
 
 
