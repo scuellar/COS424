@@ -16,7 +16,7 @@ def fitprederr(classifier, xtrain, ytrain, xtest, ytest):
     return (sqerror, abserror)
     
 
-users, businesses = justTry.crossUserReviewsBus(k=200)
+users, businesses = justTry.crossUserReviewsBus(k=100)
 
 linearsq = []
 linearabs = []
@@ -25,11 +25,14 @@ lassoabs = []
 ridgesq = []
 ridgeabs = []
 
+frac1 = 9
+frac2 = 10
+
 
 for i, user in zip(range(0, len(users.keys())), users.keys()):
     ratedbusinesses = users[user]
 
-    split = 4*(len(ratedbusinesses.values())/5)
+    split = frac1*(len(ratedbusinesses.values())/frac2)
     
     y = ratedbusinesses.values()[:split]
     x = [businesses[bus_id] for bus_id in ratedbusinesses.keys()][:split]
@@ -41,12 +44,12 @@ for i, user in zip(range(0, len(users.keys())), users.keys()):
     cvridgesq = []
     cvridgeabs = []
 
-    for j in range(0, 4):
-        xtrain = [x[k] for k in range(0, len(x)) if k%4!=j]
-        xtest = [x[k] for k in range(0, len(x)) if k%4==j]
+    for j in range(0, frac1):
+        xtrain = [x[k] for k in range(0, len(x)) if k%frac1!=j]
+        xtest = [x[k] for k in range(0, len(x)) if k%frac1==j]
         
-        ytrain = [y[k] for k in range(0, len(y)) if k%4!=j]
-        ytest = [y[k] for k in range(0, len(y)) if k%4==j]
+        ytrain = [y[k] for k in range(0, len(y)) if k%frac1!=j]
+        ytest = [y[k] for k in range(0, len(y)) if k%frac1==j]
 
         lreg = LinearRegression()
         lasso = Lasso()
@@ -104,7 +107,7 @@ for i, user in zip(range(0, len(users.keys())), users.keys()):
     x = [businesses[bus_id] for bus_id in ratedbusinesses.keys()]
 
 
-    split = 4*(len(x)/5)
+    split = frac1*(len(x)/frac2)
     
     xtrain = x[:split]
     xtest = x[split:]
