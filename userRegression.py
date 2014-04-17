@@ -94,7 +94,7 @@ ridabserror = sum(ridgeabs)/float(len(ridgeabs))
 print "CV: Avg Ridge:", ridsqerror, ridabserror
 
 displayRegression.displayRegression(linearsq, ridgesq, lassosq)
-displayRegression.displayRegressionInOrder(linearabs, ridgeabs, lassoabs,users)
+displayRegression.displayRegressionInOrder(linearsq, ridgesq, lassosq,users)
 
 linearsq = []
 linearabs = []
