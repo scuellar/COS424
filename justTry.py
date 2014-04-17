@@ -21,7 +21,7 @@ def getUserReviews(i=0):
     per = userReview.reviewsPerUser(d)
     return per
     
-def crossUserReviewsBus(minrev=15, maxrev=1000  i=0):
+def crossUserReviewsBus(minrev=15, maxrev=1000,  i=0):
     d_user = getUserReviews(i)
     (n, d_buss) = getBusVector(i)
     output = {}
