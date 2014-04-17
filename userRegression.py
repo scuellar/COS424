@@ -1,5 +1,6 @@
 from sklearn.linear_model import LinearRegression, Lasso, Ridge
 import justTry
+import displayRegression
 
 users, businesses = justTry.crossUserReviewsBus(k=200)
 
@@ -10,19 +11,21 @@ lassoabs = []
 ridgesq = []
 ridgeabs = []
 
+
 for i, user in zip(range(0, len(users.keys())), users.keys()):
     ratedbusinesses = users[user]
     
     y = ratedbusinesses.values()
     x = [businesses[bus_id] for bus_id in ratedbusinesses.keys()]
 
-    split = 9*(len(x)/10)
-    
-    xtrain = x[:split]
-    xtest = x[split:]
+
+    split=int(9*len(y))/10
     
     ytrain = y[:split]
     ytest = y[split:]
+    
+    xtrain = x[:split]
+    xtest = x[split:]
     
     lreg = LinearRegression()
     lreg.fit(xtrain, ytrain, n_jobs=-1)
@@ -78,3 +81,6 @@ print "Avg Lasso:", sqerror, abserror
 sqerror = sum(ridgesq)/float(len(ridgesq))
 abserror = sum(ridgeabs)/float(len(ridgeabs))
 print "Avg Ridge:", sqerror, abserror
+
+
+displayRegression.displayRegression(linearsq, ridgesq, lassosq)
