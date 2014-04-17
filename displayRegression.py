@@ -35,8 +35,8 @@ def displayRegressionInOrder(linear, ridge, lasso, users):
 
     reviews_numb = [len(reviews) for user, reviews in users.iteritems()]
 
-    xmax = max(reviews_numb)
     xmin = 0
+    xmax = max(reviews_numb) + (max(reviews_numb) - xmin)/25
     
     plt.plot(reviews_numb,linear, 'bs',)
     plt.hlines(average(linear),xmin, xmax, 'b')
@@ -44,7 +44,7 @@ def displayRegressionInOrder(linear, ridge, lasso, users):
     plt.hlines(average(ridge),xmin, xmax, 'r')
     plt.plot(reviews_numb,lasso, 'g^')
     plt.hlines(average(lasso),xmin, xmax, 'g')
-    plt.xlabel('User number')
+    plt.xlabel('Number of reviews')
     plt.ylabel('Error')
     plt.xlim(0., xmax)
     plt.ylim(0.)

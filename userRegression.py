@@ -16,7 +16,7 @@ def fitprederr(classifier, xtrain, ytrain, xtest, ytest):
     return (sqerror, abserror)
     
 
-users, businesses = justTry.crossUserReviewsBus(k=100)
+users, businesses = justTry.crossUserReviewsBus(k=50)
 
 linearsq = []
 linearabs = []
