@@ -161,4 +161,4 @@ dumbabserror = sum(dumbridgeabs)/float(len(dumbridgeabs))
 print "Test: Avg Dumb:", dumbsqerror, dumbabserror
 
 
-displayRegression.displayRegression(linearsq, ridgesq, lassosq)
+displayRegression.displayRegressionInOrder(linearsq, ridgesq, lassosq, users)
