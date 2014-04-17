@@ -16,7 +16,7 @@ def fitprederr(classifier, xtrain, ytrain, xtest, ytest):
     return (sqerror, abserror)
     
 
-users, businesses = justTry.crossUserReviewsBus(minrev=100,maxrev=200)
+users, businesses = justTry.crossUserReviewsBus(minrev=100,maxrev=10000)
 
 linearsq = []
 linearabs = []
@@ -93,6 +93,9 @@ ridsqerror = sum(ridgesq)/float(len(ridgesq))
 ridabserror = sum(ridgeabs)/float(len(ridgeabs))
 print "CV: Avg Ridge:", ridsqerror, ridabserror
 
+displayRegression.displayRegression(linearsq, ridgesq, lassosq)
+displayRegression.displayRegressionInOrder(linearabs, ridgeabs, lassoabs,users)
+
 linearsq = []
 linearabs = []
 lassosq = []
@@ -160,5 +163,6 @@ dumbsqerror = sum(dumbsq)/float(len(dumbsq))
 dumbabserror = sum(dumbabs)/float(len(dumbabs))
 print "Test: Avg Dumb:", dumbsqerror, dumbabserror
 
+displayRegression.displayRegressionCompare1(ridgesq, dumbsq)
+displayRegression.displayRegressionCompare(ridgesq, dumbsq, users)
 
-displayRegression.displayRegressionInOrder(linearsq, ridgesq, lassosq, users)
