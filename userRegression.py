@@ -99,6 +99,8 @@ lassosq = []
 lassoabs = []
 ridgesq = []
 ridgeabs = []
+dumbsq = []
+dumbabs = []
 
 for i, user in zip(range(0, len(users.keys())), users.keys()):
     ratedbusinesses = users[user]
@@ -131,6 +133,17 @@ for i, user in zip(range(0, len(users.keys())), users.keys()):
     ridgesq.append(ridsqerror)
     ridgeabs.append(ridabserror)
 
+    dumbpred = [features[0] for features in x]
+
+    dumbsqerrors = [(test - pred)**2 for test, pred in zip(ytest, dumbpred)]
+    dumbsqerror = sum(dumbsqerrors)/float(len(dumbsqerrors))
+    
+    dumbabserrors = [abs(test - pred) for test, pred in zip(ytest, dumbpred)]
+    dumbabserror = sum(dumbabserrors)/float(len(dumbabserrors))
+
+    dumbsq.append(dumbsqerror)
+    dumbabs.append(dumbabserror)
+
 linsqerror = sum(linearsq)/float(len(linearsq))
 linabserror = sum(linearabs)/float(len(linearabs))
 print "Test: Avg Linear:", linsqerror, linabserror
@@ -142,6 +155,10 @@ print "Test: Avg Lasso:", lassqerror, lasabserror
 ridsqerror = sum(ridgesq)/float(len(ridgesq))
 ridabserror = sum(ridgeabs)/float(len(ridgeabs))
 print "Test: Avg Ridge:", ridsqerror, ridabserror
+
+dumbsqerror = sum(dumbsq)/float(len(dumbsq))
+dumbabserror = sum(dumbabs)/float(len(dumbabs))
+print "Test: Avg Dumb:", dumbsqerror, dumbabserror
 
 
 displayRegression.displayRegressionInOrder(linearsq, ridgesq, lassosq, users)
