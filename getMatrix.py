@@ -3,7 +3,7 @@ from numpy import array
 from scipy.sparse import lil_matrix
 from scipy.io import mmwrite
 
-def getMatrix():
+def getMatrix(filename):
     
 	reviews = justTry.getUserReviews()
 	
@@ -30,8 +30,8 @@ def getMatrix():
 				col = bus[bid] 						# column associated with business
 				rmatrix[row,col] = revs[bid]
 
-	mmwrite("ratings_matrix.mtx", rmatrix) 		# 70817 x 3654
+	mmwrite(filename, rmatrix) 		# 70817 x 3654
 
 
-getMatrix()
+getMatrix("ratings_matrix.mtx")
 
