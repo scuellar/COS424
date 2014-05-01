@@ -15,8 +15,8 @@ def fitprederr(classifier, xtrain, ytrain, xtest, ytest):
     
     return (sqerror, abserror)
     
+users, businesses = justTry.crossUserReviewsBus(minrev=10,maxrev=20)
 
-users, businesses = justTry.crossUserReviewsBus(minrev=100,maxrev=10000)
 
 linearsq = []
 linearabs = []
@@ -43,7 +43,6 @@ for i, user in zip(range(0, len(users.keys())), users.keys()):
     cvlassoabs = []
     cvridgesq = []
     cvridgeabs = []
-
     for j in range(0, frac1):
         xtrain = [x[k] for k in range(0, len(x)) if k%frac1!=j]
         xtest = [x[k] for k in range(0, len(x)) if k%frac1==j]
@@ -80,6 +79,7 @@ for i, user in zip(range(0, len(users.keys())), users.keys()):
     lassoabs.append(lasabserror)
     ridgesq.append(ridsqerror)
     ridgeabs.append(ridabserror)
+
     
 linsqerror = sum(linearsq)/float(len(linearsq))
 linabserror = sum(linearabs)/float(len(linearabs))
@@ -94,7 +94,7 @@ ridabserror = sum(ridgeabs)/float(len(ridgeabs))
 print "CV: Avg Ridge:", ridsqerror, ridabserror
 
 displayRegression.displayRegression(linearsq, ridgesq, lassosq)
-displayRegression.displayRegressionInOrder(linearabs, ridgeabs, lassoabs,users)
+displayRegression.displayRegressionInOrder(linearsq, ridgesq, lassosq,users)
 
 linearsq = []
 linearabs = []
@@ -162,6 +162,12 @@ print "Test: Avg Ridge:", ridsqerror, ridabserror
 dumbsqerror = sum(dumbsq)/float(len(dumbsq))
 dumbabserror = sum(dumbabs)/float(len(dumbabs))
 print "Test: Avg Dumb:", dumbsqerror, dumbabserror
+
+bigger = [1 for i, ridge in enumerate(ridgesq) if ridge <= dumbsq[i]]
+smaller = [ridge - dumbsq[i] for i, ridge in enumerate(ridgesq) if ridge > dumbsq[i]]
+
+print "Better success in: ", sum(bigger), " which is ", (float(sum(bigger))/len(ridgesq)), " of the values"
+print smaller
 
 displayRegression.displayRegressionCompare1(ridgesq, dumbsq)
 displayRegression.displayRegressionCompare(ridgesq, dumbsq, users)

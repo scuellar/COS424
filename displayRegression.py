@@ -23,7 +23,8 @@ def displayRegression(linear, ridge, lasso):
     plt.xlabel('User number')
     plt.ylabel('Error')
     plt.xlim(0., len(x)+2)
-    plt.ylim(0.)
+    xmi, xma, ymi, yma = plt.axis()
+    plt.ylim(0., min(yma, 2))
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     plt.show()
@@ -39,7 +40,6 @@ def displayRegressionInOrder(linear, ridge, lasso, users):
 
     xmin = 0
     xmax = max(reviews_numb) + (max(reviews_numb) - xmin)/25
-
     plt.figure(2)
     plt.plot(reviews_numb,linear, 'bs', label="Linear error")
     plt.hlines(average(linear),xmin, xmax, 'b', label="Average Linear error")
@@ -50,7 +50,8 @@ def displayRegressionInOrder(linear, ridge, lasso, users):
     plt.xlabel('Number of reviews')
     plt.ylabel('Error')
     plt.xlim(0., xmax)
-    plt.ylim(0.)
+    xmi, xma, ymi, yma = plt.axis()
+    plt.ylim(0., min(yma, 2))
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     plt.show()
@@ -72,7 +73,8 @@ def displayRegressionCompare1(ridge, dumb):
     plt.xlabel('User number')
     plt.ylabel('Error')
     plt.xlim(0., xmax)
-    plt.ylim(0.)
+    xmi, xma, ymi, yma = plt.axis()
+    plt.ylim(0., min(yma, 2))
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     plt.show()
@@ -93,7 +95,8 @@ def displayRegressionCompare(ridge, dumb, users):
     plt.xlabel('Number of reviews')
     plt.ylabel('Error')
     plt.xlim(0., xmax)
-    plt.ylim(0.)
+    xmi, xma, ymi, yma = plt.axis()
+    plt.ylim(0., min(yma, 2))
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     plt.show()
