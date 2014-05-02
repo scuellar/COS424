@@ -15,7 +15,7 @@ def getBusinesses():
 	bus_IDs = bus.keys() 						# distinct business ids
 	nBus = len(bus_IDs) 						# number of distinct businesses
 	busVals = {} 								
-	for i, bid in enumerate(bus_IDs):
+	for i, bid in enumerate(sorted(bus_IDs)):
 		busVals[bid] = i
 	return nBus, bus, busVals
 
@@ -37,7 +37,7 @@ def getReviewList(bus):
 				reviewList += [(uid, bid, revs[bid])]
 	nReviews = len(reviewList)
 	userVals = {}
-	for i, uid in enumerate(user_IDs):
+	for i, uid in enumerate(sorted(user_IDs)):
 		userVals[uid] = i
 	return nUsers, reviewList, userVals
 
@@ -53,8 +53,9 @@ def getMatrix(prefix, n=1, groups=None):
 		in each group is defined by the corresponding tuple entry (0.1=10pc of all reviews)
 
 		getMatrix produces two extra files:
-			<prefix>_pickled_reviews -- pickled list of reviews
-			<prefix>_reviews.csv -- .csv-like list of reviews (uid, row, bid, col, rating)
+			<prefix>_users.csv
+			<prefix>_businesses.csv
+			each line is of the form 'num, id' - used to associate row/col numbers to ids
 		"""
 	
 	nBus, bus, busVals = getBusinesses()
@@ -76,9 +77,8 @@ def getMatrix(prefix, n=1, groups=None):
 	
 	low = 0
 	# build matrix for each group
-	print '\n'
 	for i in range(0, len(groups)):
-		print 'Writing matrix: '+str(i)+'...\n'
+		print 'Writing matrix: '+str(i)+'...'
 		rmatrix = lil_matrix((nUsers, nBus))
 		# iterate through all reviews on this group
 		for rev in reviews[low:low+groups[i]]:
@@ -89,22 +89,16 @@ def getMatrix(prefix, n=1, groups=None):
 		mmwrite(prefix+str(i)+'.mtx', rmatrix)
 
 
-	# rebuild reviews list so that each entry includes row and col # associated with user and business
-	for i in range(0, len(reviews)):
-		rev = reviews[i]
-		reviews[i] = (rev[0], userVals[rev[0]], rev[1], busVals[rev[1]], rev[2])
-
-	print 'Writing reviews text file...\n'
-	# output plain text review file
-	f = open(prefix+'_reviews.csv', 'w')
-	for rev in reviews:
-		f.write(','.join(str(entry) for entry in rev))
+	# dump text files
+	print 'Writing users text file...'
+	f = open(prefix+'_users.csv', 'w')
+	for uid, num in sorted(userVals.iteritems()):
+		f.write(str(num)+','+uid+'\n')
 	f.close()
-
-	print 'Writing pickled reviews file...\n'
-	# output pickled review file
-	f = open(prefix+'_pickled_reviews.pic', 'w')
-	pickle.dump(reviews, f)
+	print 'Writing businesses text file...'
+	f = open(prefix+'_businesses.csv', 'w')
+	for bid, num in sorted(busVals.iteritems()):
+		f.write(str(num)+','+bid+'\n')
 	f.close()
 
 
