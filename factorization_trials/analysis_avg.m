@@ -30,11 +30,46 @@ ratings = ratings0+ratings1+ratings2+ratings3+...
           ratings8;
       
 mask = ratings~=0;
+
+% ==== Select only users and businesses with more than 2 ratings
+% us = sum(mask,2);
+% us_ind = us>2;
+% ratings0 = ratings0(us_ind,:);
+% ratings1 = ratings1(us_ind,:);
+% ratings2 = ratings2(us_ind,:);
+% ratings3 = ratings3(us_ind,:);
+% ratings4 = ratings4(us_ind,:);
+% ratings5 = ratings5(us_ind,:);
+% ratings6 = ratings6(us_ind,:);
+% ratings7 = ratings7(us_ind,:);
+% ratings8 = ratings8(us_ind,:);
+% ratings = ratings0+ratings1+ratings2+ratings3+...
+%           ratings4+ratings5+ratings6+ratings7+...
+%           ratings8;
+% test = test(us_ind,:);
+% bu = sum(mask,1);
+% bu_ind = bu>2;
+% ratings0 = ratings0(:,bu_ind);
+% ratings1 = ratings1(:,bu_ind);
+% ratings2 = ratings2(:,bu_ind);
+% ratings3 = ratings3(:,bu_ind);
+% ratings4 = ratings4(:,bu_ind);
+% ratings5 = ratings5(:,bu_ind);
+% ratings6 = ratings6(:,bu_ind);
+% ratings7 = ratings7(:,bu_ind);
+% ratings8 = ratings8(:,bu_ind);
+% ratings = ratings0+ratings1+ratings2+ratings3+...
+%           ratings4+ratings5+ratings6+ratings7+...
+%           ratings8;
+% test = test(:,bu_ind);
+% mask = ratings~=0;
+
 n_bus = sum(mask,1);
 n_users = sum(mask,2);
 bus = sum(ratings,1)./n_bus;
 users = sum(ratings,2)./n_users;
 users(isnan(users))=0;
+bus(isnan(bus))=0;
 tmean = sum(sum(ratings))/size(nonzeros(ratings),1);
 
 users = users.*n_users;

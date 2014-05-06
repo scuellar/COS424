@@ -1,6 +1,5 @@
 %% Summary:
-% Method 3. Use factorization model with mean and business bias but no user
-% bias
+% Method 3. Use factorization model with biases
 %
 % Assumption: users have too few ratings and therefore estimating user bias
 % based on the ratings is dangerous
@@ -10,6 +9,14 @@
 %   rank
 %   - pick best one and fit model to all training data
 %   - calculate error
+%
+% Results: best number of latent factors = 30
+%          best lambda = 0.2
+%          mae = 0.8779
+%          rmse = 1.1461
+% For ratings matrix with only users with more than 2 ratings
+%         mae = 0.82
+%         rsme = 1.05
 
 clear;clc;
 
@@ -26,9 +33,9 @@ ratings7 = mm_to_msm('ratings7.mtx');
 ratings8 = mm_to_msm('ratings8.mtx');
 test = mm_to_msm('ratings9.mtx');
 
-lambda = [0.1,0.5,1.0];
-numlf = [10,30,50];
-lrate = [0.15,0.10,0.05];
+lambda = [0.05,0.1,0.20];
+numlf = [30,50,100];
+lrate = 0.01;
 
 ratings = ratings0+ratings1+ratings2+ratings3+...
           ratings4+ratings5+ratings6+ratings7+...
@@ -45,8 +52,8 @@ for l=1:size(lambda,2)
     for k=1:size(numlf,2)
         training = ratings-eval(strcat('ratings',num2str(count)));
         cvtest = eval(strcat('ratings',num2str(count)));
-        [U,B,mymu,bb] = factorize_no_user_bias(training,numlf(k),lambda(l),lrate(k),50);
-        predictions = predict_no_user_bias(cvtest,U,B,mymu,bb);
+        [U,B,mymu,bu,bb] = factorize_bias(training,numlf(k),lambda(l),lrate,100);
+        predictions = predict_bias(cvtest,U,B,mymu,bu,bb);
         lambda(l)
         numlf(k)
         [mse,mae] = calculate_error(predictions,cvtest)
@@ -58,33 +65,34 @@ for l=1:size(lambda,2)
         count = count+1;
     end
 end
-
-[U,B,mymu,bb] = factorize_no_user_bias(ratings,b_numlf,b_lambda,0.1,60);
-predictions = predict_no_user_bias(test,U,B,mymu,bb);
+b_numlf
+b_lambda
+[U,B,mymu,bu,bb] = factorize_bias(ratings,b_numlf,b_lambda,0.01,100);
+predictions = predict_bias(test,U,B,mymu,bu,bb);
 [mse,mae] = calculate_error(test,predictions)
 
-% cluster businesses
-bclusters = kmeans(bb,5);
-
-% factorize on individually clustered ratings matrix
-c_ratings1 = ratings(:,bclusters==1);
-c_ratings2 = ratings(:,bclusters==2);
-c_ratings3 = ratings(:,bclusters==3);
-c_ratings4 = ratings(:,bclusters==4);
-c_ratings5 = ratings(:,bclusters==5);
-c_test1 = test(:,bclusters==1);
-c_test2 = test(:,bclusters==2);
-c_test3 = test(:,bclusters==3);
-c_test4 = test(:,bclusters==4);
-c_test5 = test(:,bclusters==5);
-
-for i=1:5
-    disp(strcat('Cluster ',num2str(i)));
-    [c_U,c_B,c_mymu,c_bb] = factorize_no_user_bias(eval(strcat('c_ratings',num2str(i))),...
-        b_numlf,b_lambda,0.1,60);
-    predictions = predict_no_user_bias(eval(strcat('c_','test',num2str(i))),c_U,c_B,c_mymu,c_bb);
-    [mse,mae] = calculate_error(eval(strcat('c_','test',num2str(i))),predictions)
-end
+% % cluster businesses
+% bclusters = kmeans(bb,5);
+% 
+% % factorize on individually clustered ratings matrix
+% c_ratings1 = ratings(:,bclusters==1);
+% c_ratings2 = ratings(:,bclusters==2);
+% c_ratings3 = ratings(:,bclusters==3);
+% c_ratings4 = ratings(:,bclusters==4);
+% c_ratings5 = ratings(:,bclusters==5);
+% c_test1 = test(:,bclusters==1);
+% c_test2 = test(:,bclusters==2);
+% c_test3 = test(:,bclusters==3);
+% c_test4 = test(:,bclusters==4);
+% c_test5 = test(:,bclusters==5);
+% 
+% for i=1:5
+%     disp(strcat('Cluster ',num2str(i)));
+%     [c_U,c_B,c_mymu,c_bb] = factorize_no_user_bias(eval(strcat('c_ratings',num2str(i))),...
+%         b_numlf,b_lambda,0.1,60);
+%     predictions = predict_no_user_bias(eval(strcat('c_','test',num2str(i))),c_U,c_B,c_mymu,c_bb);
+%     [mse,mae] = calculate_error(eval(strcat('c_','test',num2str(i))),predictions)
+% end
 
 
 

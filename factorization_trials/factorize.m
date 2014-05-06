@@ -15,13 +15,12 @@ W = rand(r,k);
 H = rand(k,c);
 
 for i=1:maxiter
-    % calculate error
     for j=1:len
         row = rows(j);
         col = cols(j);
         e(j) = vals(j)-W(row,:)*H(:,col);
         W(row,:) = W(row,:)+lrate*(e(j)*H(:,col)'-lambda*W(row,:));
-        H(:,col) - H(:,col)+lrate*(e(j)*W(row,:)'-lambda*H(:,col));
+        H(:,col) = H(:,col)+lrate*(e(j)*W(row,:)'-lambda*H(:,col));
     end
     norm(e)
 end
