@@ -1,20 +1,26 @@
 import numpy as np
 
 class Business(list):
-    def __init__ (self, bus_dic, default = 0, include_cats = True):
+    def __init__ (self, bus_dic, default = 0, include_cats = True, only_cats = False, smart = True):
         self.default = default
         self.dico = bus_dic
         self.id = self.dico.get("business_id")
         self.name = self.dico.get("name").encode('utf-8')
         self.vec = {}
+        self.vec2 = {}
         self.features = []
         self.vector = None
 
         if include_cats:
             self.makeCategories() #Includes the top categories in the vector
-        self.makeFlatDic() #Makes self.vec as a dictionary with all attributes
+        if not only_cats:
+            self.makeFlatDic() #Makes self.vec as a dictionary with all attributes
+        if smart:
+            self.smartProcessVect(self.vec) #Cleans self.vec (True -> 1, false -> 0, None -> self.default)
+            self.vec = self.vec2
+        else:
+            self.processVect(self.vec) #Cleans self.vec (True -> 1, false -> 0, None -> self.default)
         self.extractFeatures() #Makes self.features with all the features in self.vec
-        self.processVect(self.vec) #Cleans self.vec (True -> 1, false -> 0, None -> self.default)
         self.npVector() #Makes a numpy vector with the features and the dictionary.
 
 
@@ -24,8 +30,8 @@ class Business(list):
         self.vector = np.array([self.vec[feat] for feat in self.features])
         
     def makeFlatDic(self):
-        self.vec["review_count"] = self.dico.get("review_count")
-        self.vec["stars"] = self.dico.get("stars")
+        #self.vec["review_count"] = self.dico.get("review_count")
+        self.vec["stars"] = self.dico.get("stars", 0)
 
         attributes = self.dico.get("attributes", {})
         self.makeFlatAttributes(attributes)
@@ -46,7 +52,9 @@ class Business(list):
         #self.vec["Accepts Credit Cards"] = attributes.get("Accepts Credit Cards")
         self.vec["Good for Kids"] = attributes.get("Good for Kids")
         self.vec["Good For Groups"] = attributes.get("Good For Groups")
-        self.vec["Price Range"] = attributes.get("Price Range")
+        self.vec["Price Range"] = attributes.get("Price Range", -100)
+        if self.vec["Price Range"] is None:
+            print self.name
         
         good_for = attributes.get("Good For", {})
         self.makeGoodFor(good_for)
@@ -104,6 +112,24 @@ class Business(list):
             elif value is False :
                 d[key] = -1
 
+    """This is creating extra features for None, as Alex suggested"""
+    def smartProcessVect(self, d):
+        for key, value in d.iteritems():
+            if value is None:
+                self.vec2[key + "_None"] = 1
+                self.vec2[key + "_True"] = 0
+                self.vec2[key + "_False"] = 0
+            elif value is True :
+                self.vec2[key + "_None"] = 0
+                self.vec2[key + "_True"] = 1
+                self.vec2[key + "_False"] = 0
+            elif value is False :
+                self.vec2[key + "_None"] = 0
+                self.vec2[key + "_True"] = 0
+                self.vec2[key + "_False"] = 1
+            else:
+                self.vec2[key] = d.get(key, None)
+                
     def processNoise(self, noise):
         if noise is None:
             return 0
@@ -176,5 +202,4 @@ class Business(list):
         list_idx = len(self._list)
         self.insert(list_idx, val)
 
-                
-        
+

@@ -1,9 +1,9 @@
 import justTry
 from sklearn.cluster import KMeans
 
-def clusterBusiness(busNumber = 0, k = 8, max_iter=300, include_cats = True):
+def clusterBusiness(busNumber = 0, k = 8, max_iter=300, include_cats = True, only_cats = False, smart = True):
     # Get the business
-    bfvs = justTry.getBusFeatVector(busNumber, include_cats = include_cats)
+    bfvs = justTry.getBusFeatVector(busNumber, include_cats = include_cats, only_cats = only_cats, smart = smart)
 
     # Make business matrix
     matrix = [bus.vector for bus in bfvs]
@@ -22,18 +22,18 @@ def clusterBusiness(busNumber = 0, k = 8, max_iter=300, include_cats = True):
     return clusters
 
 
-cb = clusterBusiness(k = 50)
+#cb = clusterBusiness(k = 50)
 
-import pickle
-def write(data, outfile):
-    f = open(outfile, "w+b")
-    pickle.dump(data, f)
-    f.close()
+#import pickle
+#def write(data, outfile):
+#    f = open(outfile, "w+b")
+#    pickle.dump(data, f)
+#    f.close()
 
-def printTo(data, outfile):
-    f = open(outfile, "w+b")
-    f.write(str(data))
-    f.close()
+#def printTo(data, outfile):
+#    f = open(outfile, "w+b")
+#    f.write(str(data))
+#    f.close()
 
-printTo([[bus.name for bus in cluster] for cluster in cb], "clusterNames.txt")
-write([[bus.id for bus in cluster] for cluster in cb], "clusterIds.txt")
+#printTo([[bus.name for bus in cluster] for cluster in cb], "clusterNames.txt")
+#write([[bus.id for bus in cluster] for cluster in cb], "clusterIds.txt")
