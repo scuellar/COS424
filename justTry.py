@@ -1,6 +1,7 @@
 import readYelp
 import words
 import businessVectors
+import businessFeatureVector as bfv
 import userReview
 
 def getWords(i=0):
@@ -15,12 +16,19 @@ def getBusVector(i=0):
     (n, vectors) = businessVectors.busFeatureVector(d)
     return (n, vectors)
 
+def getBusFeatVector(i=0):
+    (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_business.json', i)
+    print "Got the data! Got ", l, " lines of data"
+    featVectors = [bfv.Business(bus) for bus in d]
+    #(n, vectors) = businessVectors.busFeatureVector(d)
+    return featVectors
+
 def getUserReviews(i=0):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_review.json', i)
     print "Got the data! Got ", l, " lines of data"
     per = userReview.reviewsPerUser(d)
     return per
-    
+    n
 def crossUserReviewsBus(minrev=15, maxrev=1000,  i=0):
     d_user = getUserReviews(i)
     (n, d_buss) = getBusVector(i)
