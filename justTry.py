@@ -16,10 +16,10 @@ def getBusVector(i=0):
     (n, vectors) = businessVectors.busFeatureVector(d)
     return (n, vectors)
 
-def getBusFeatVector(i=0):
+def getBusFeatVector(i=0, include_cats = True, only_cats = False, smart = True):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_business.json', i)
     print "Got the data! Got ", l, " lines of data"
-    featVectors = [bfv.Business(bus) for bus in d]
+    featVectors = [bfv.Business(bus, include_cats = include_cats, only_cats = only_cats, smart = smart) for bus in d]
     #(n, vectors) = businessVectors.busFeatureVector(d)
     return featVectors
 
