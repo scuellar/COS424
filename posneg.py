@@ -8,7 +8,7 @@ from scipy.sparse import lil_matrix
 from nltk.corpus import stopwords
 from nltk.stem import porter, lancaster
 import string
-
+import pickle
 import re
 
 def posneg(filename, n=0):
@@ -47,3 +47,23 @@ def posneg(filename, n=0):
             matrix[user2index[review["user_id"]], bus2index[review["business_id"]]] = -1
     
     mmwrite(filename, matrix)
+
+def posneg2(filename, startPos, endPos):
+    (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_review.json', endPos) 
+
+    outputreviews = []
+
+    for review in d[startPos:endPos]:
+        answer = ""
+        while answer != "y" and answer != "n":
+            print review["stars"], review["text"]
+            answer = raw_input()
+    
+        if answer == "y":
+            outputreviews.append(([review["user_id"], review["business_id"], 1]))
+        elif answer == "n":
+            outputreviews.append(([review["user_id"], review["business_id"], -1]))
+
+    ofile = open(filename, 'wb')
+    pickle.dump(outputreviews, ofile)
+    ofile.close()
