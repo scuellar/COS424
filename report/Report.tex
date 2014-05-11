@@ -1,0 +1,110 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphics}
+\usepackage{enumerate}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\E}[1]{E\left[ #1 \right]}
+\newcommand{\mbf}[1]{\mathbf{#1}}
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{question}[2][Question]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\begin{document}
+% --------------------------------------------------------------
+% Start here
+% --------------------------------------------------------------
+\title{Project Report \\ \vspace{5mm} \large{COS 424: Interacting with Data}}
+\author{Jonathan Balkind\\ Santiago Cu\'ellar\\ Jos\'e Ferreira\\ Alex Tarr} 
+\maketitle
+
+% Section 1. Introduction
+\section{Introduction} 
+
+This problem is very important because the data sucks and therefore Yelp is desperate.
+
+
+% Section 2. Factorization
+\section{Factorization}
+
+Matrix factorization methods have been extensively used in recommender systems. The idea is that we can characterize users and businesses by a feature vector in the same (relatively) low-dimensional latent space. Ideally, the features would represent meaningful dimensions that determine the characteristics of a business or user. However, matrix factorization techniques usually result in uninterpretable features. 
+
+Nevertheless, in some sense, they perform operations akin to a singular value decomposition (SVDs) with the added advantages that it does not require a dense matrix , and that it is substantially less computationally expensive. SVD would require one to guess the missing values (inputation), as well as adding great computational expense to the problem. We next present the models used to assess the applicability of matrix factorization to the problem at hand (more details can be found in the technical Appendix).
+
+\paragraph{Model 1} In sum, we want to factorize the very large sparse ratings matrix of users \emph{vs.} businesses into two oblong matrices $\mbf U\in\mathbb{R}^{n_u\times f}$ and $\mbf B\in\mathbb{R}^{n_b\times f}$, where $f$ is the number of latent factors. The important point is that we only wish to consider the ratings that we do have (thus ignoring all the unknown ratings). Therefore, we wish to find $\mbf U$ and $\mbf B$ that solve the following optimization problem:
+\begin{equation}
+\min_{\mbf U,\mbf B} = \sum_{(i,j)\in K} (r_{ij}-\mbf u_i^T\mbf b_j)^2+\lambda\left(||\mbf u_i||^2+||\mbf b_j||^2\right)
+\end{equation}
+where $K$ is the set of non-empty ratings in the matrix and the $\mbf u_i$ and $\mbf b_i$ are feature vectors associated with user $i$ and business $j$, respectively (columns in $\mbf U$ and $\mbf B$). With this model, we can easily predict a new rating using:
+\begin{equation}
+\hat r_{ij} = \mbf u_i^T\mbf b_j.
+\end{equation}
+
+\paragraph{Model 2} Unfortunately, model 1 is rather restrictive. In particular, it doesn't account for user and business biases which one would expect play a big role in defining the true ratings. As such, we consider a new prediction model:
+\begin{equation}
+\hat r_{ij} = \mu + p_i + q_j + \mbf u_i^T\mbf b_j
+\end{equation}
+where $\mbf p$ and $\mbf q$ represent average user and business biases, respectively, and $\mu$ is the global average rating. The optimization problem to be solved changes accordingly, and is now over $\mbf U$, $\mbf B$, $\mbf p$ and $\mbf q$.
+
+\paragraph{Model 3} Another model one can consider stems from the realization that business average ratings tend to represent a better baseline than user ratings in the Yelp dataset (as there is a large number of users that have a small amount of ratings). As such, it is helpful to consider a prediction model of the following form:
+\begin{equation}
+\hat r_{ij} =  p_i + q_j + \mbf u_i^T\mbf b_j
+\end{equation}
+where $q_j$ now represents the average rating for business $j$ and $p_i$ is the average rating offset for user $i$. Note that in this model we are only optimizing the matrices $\mbf U$ and $\mbf B$. 
+
+\paragraph{Models BL} In order to directly assess the effectiveness of the matrix factorization technique, we compared the results against a baseline model using Model 3's framework without the factorized matrices. 
+
+
+\newpage
+\section{Technical Appendix}
+This section provides a few additional details on the matrix factorization technique. 
+
+The solution of each of the optimization problems follows from simple gradient descent (learning rate parameter $\gamma$). We consider each model in turn and present the optimization problem to be solved as well as the update equation that results.
+
+\paragraph{Model 1} The optimization problem for this model is:
+\begin{equation*}
+\min_{\mbf U,\mbf B} = \sum_{(i,j)\in K} (r_{ij}-\mbf u_i^T\mbf b_j)^2+\lambda\left(||\mbf u_i||^2+||\mbf b_j||^2\right)
+\end{equation*}
+and results in the following simple update equations
+\begin{equation*}
+\mbf u_i \leftarrow \mbf u_i+\gamma\left(e_{ij}\mbf b_j-\lambda\mbf u_i\right)
+\end{equation*}
+\begin{equation*}
+\mbf b_j \leftarrow \mbf b_j+\gamma\left(e_{ij}\mbf u_i-\lambda\mbf b_j\right).
+\end{equation*}
+where $e_{ij}\equiv r_{ij}-\hat r_{ij}$.
+
+\paragraph{Model 2} The optimization problem is:
+\begin{equation*}
+\min_{\mbf U,\mbf B,\mbf p,\mbf q-\mu} = \sum_{(i,j)\in K} (r_{ij}-\mbf u_i^T\mbf b_j-p_i-q_j)^2+\lambda\left(||\mbf u_i||^2+||\mbf b_j||^2+p_i+q_j\right)
+\end{equation*}
+so that we have two additional update equations:
+\begin{equation*}
+p_i\leftarrow p_i+\gamma\left(e_{ij}-\lambda p_i\right)
+\end{equation*}
+\begin{equation*}
+q_j\leftarrow q_j+\gamma\left(e_{ij}-\lambda q_j\right).
+\end{equation*}
+
+\paragraph{Model 3} The optimization problem is:
+\begin{equation*}
+\min_{\mbf U,\mbf B} = \sum_{(i,j)\in K} (r_{ij}-\mbf u_i^T\mbf b_j-p_i-q_j)^2+\lambda\left(||\mbf u_i||^2+||\mbf b_j||^2\right).
+\end{equation*}
+The update equations are similar to the ones for Model 1. We note that to estimate $\mbf p$ and $\mbf q$ from the data, we should account for priors. This prevents attributing excessive importance to individual ratings when the users (or businesses) have a small number of ratings. Therefore, for business $j$, we obtain:
+\begin{equation*}
+q_j = \frac{R \mu+\sum_i r_{ij}}{R+\sum_i\mbf 1\{r_{ij}\neq 0\}}
+\end{equation*}
+where $R$ is the ratio between the overall variance and the variance of the business mean ratings. The same technique is employed for estimating $\mbf q$.
+
+
+
+\end{document}
