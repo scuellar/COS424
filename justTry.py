@@ -6,29 +6,35 @@ import userReview
 
 def getWords(i=0):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_review.json', i)
-    print "Got the data! Got ", l, " lines of data"
+    #print "Got the data! Got ", l, " lines of data"
     (all_w, per) = words.bagOfWords(d)
     return (all_w, per)
 
 def getBusVector(i=0):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_business.json', i)
-    print "Got the data! Got ", l, " lines of data"
+    #print "Got the data! Got ", l, " lines of data"
     (n, vectors) = businessVectors.busFeatureVector(d)
     return (n, vectors)
 
 def getBusFeatVector(i=0, include_cats = True, only_cats = False, smart = True):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_business.json', i)
-    print "Got the data! Got ", l, " lines of data"
+    #print "Got the data! Got ", l, " lines of data"
     featVectors = [bfv.Business(bus, include_cats = include_cats, only_cats = only_cats, smart = smart) for bus in d]
     #(n, vectors) = businessVectors.busFeatureVector(d)
     return featVectors
 
 def getUserReviews(i=0):
     (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_review.json', i)
-    print "Got the data! Got ", l, " lines of data"
+    #print "Got the data! Got ", l, " lines of data"
     per = userReview.reviewsPerUser(d)
     return per
-    n
+
+def getReviewsTest(i=0, n=10):
+    (l, d) = readYelp.readY('../yelp/yelp_academic_dataset_review.json', i)
+    #print "Got the data! Got ", l, " lines of data"
+    (train, test) = userReview.reviewsPerUserTest(d)
+    return (train, test)
+
 def crossUserReviewsBus(minrev=15, maxrev=1000,  i=0):
     d_user = getUserReviews(i)
     (n, d_buss) = getBusVector(i)

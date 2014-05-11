@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 def clusterBusiness(busNumber = 0, k = 8, max_iter=300, include_cats = True, only_cats = False, smart = True):
     # Get the business
     bfvs = justTry.getBusFeatVector(busNumber, include_cats = include_cats, only_cats = only_cats, smart = smart)
-
+    print "Got ", len(bfvs), " businesses"
     # Make business matrix
     matrix = [bus.vector for bus in bfvs]
 

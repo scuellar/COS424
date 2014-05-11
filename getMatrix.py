@@ -4,7 +4,7 @@ from numpy import array
 from scipy.sparse import lil_matrix
 from scipy.io import mmwrite
 
-def getMatrix(filename, n=0):
+def getMatrix(filename, n=0, nump = True):
 
     reviews = justTry.getUserReviews(n)
 	
@@ -31,11 +31,9 @@ def getMatrix(filename, n=0):
                 col = bus[bid] 						# column associated with business
                 rmatrix[row,col] = revs[bid]
                 
-    print "almost done"
     mmwrite(filename, rmatrix) 		# 70817 x 3654
     return rmatrix
 
 
-
-#mmwrite("fact_ratings_matrix.mtx", fctr_res)
+#getMatrix("factorization_trials/fact_ratings_matrix.txt")
 
