@@ -43,4 +43,6 @@ def reviewsPerUserTest(dic, verb = False, n = 10):
         
         if verb and n>0 and n%5000==0:
             print n," Reviews processed..."
+    print "Train set size", len(revPerUserTrain)
+    print "Train set size", len(revPerUserTest)
     return (revPerUserTrain, revPerUserTest)

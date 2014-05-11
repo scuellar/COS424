@@ -41,6 +41,6 @@ def getMatrices(reviews, filename = "", clusters = [], n=0, nump = True):
             userToPositionPerClus[clusterN] = perCluster
             rmatrices[clusterN][row,index] = revs[bid]
               
-    for i in range(leng):
-        mmwrite(str(i) + filename, rmatrices[i]) 		# 70817 x 3654
+    #for i in range(leng):
+        #mmwrite(str(i) + filename, rmatrices[i]) 		# 70817 x 3654
     return (rmatrices, busPosition, userToPosition, userToPositionPerClus)
