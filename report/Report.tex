@@ -36,8 +36,6 @@
 % Section 1. Introduction
 \section{Introduction} 
 
-This problem is very important because the data sucks and therefore Yelp is desperate.
-
 
 % Section 2. Factorization
 \section{Factorization}
@@ -73,16 +71,16 @@ where $q_j$ now represents the average rating for business $j$ and $p_i$ is the 
 \subsection{Results and Error Analysis}
 The parameters $\lambda$ and the number of latent factors were chosen through 10-fold cross-validation. Two metrics were considering for assessing the quality of the model: root mean squared error (RMSE) and mean absolute error (MAE). The former has been the metric of choice for recommender systems at large, but we found that the latter also provides interesting insight into the performance of the models. 
 
-The results obtained for each of the models can be seen in Table XYZXYZXYZXYZ below. We note that the factorized models fared worse than the simple baseline model. Below, we address some of the reasons that may explain these results.
+The results obtained for each of the models can be seen in Table \ref{tab:results} below. We note that the factorized models fared worse than the simple baseline model. Below, we address some of the reasons that may explain these results.
 
 \paragraph{Sparsity.} While the popularity of MF methods came about in the context of sparse ratings matrices, we suspect that excessive sparsity has substantial negative impact on the performance of the model. In particular, 83\% of the users in the training set have less than 5 reviews to their name and 49\% have a single review. The text associated with these reviews is, more often than not, descriptive of either an excellent experience or a terrible one. It appears that many of the users have created accounts solely for the purpose of writing a single extreme review, the effect of which is not accurately portrayed by our models.
 
-\paragraph{Critic users.} We took the vector $\mbf p$ of average user offsets (from Model 3) and used it to split the users into three groups: positive, negative and fair. We then used the partitioned ratings matrix to fit three factorization models using Model 3. The cluster information and results obtained can be found in TABLE XYZXYZXYZXYZ. We note that the average error did not change much for fair users. However, positive users saw a substantial improvement in MAE. This is likely a result of the positive bias in the ratings (many ratings are 5) and the fact that our prediction model clips the ratings to the interval $[0,5]$. More worrying, however, was the decrease in performance for negative users. Unlike with the positive users, this does not appear to result from clipping, but rather from intrinsic variance in the ratings from these users. This suggests that it would be useful to employ different levels of regularization depending on the average offset of the user (future work).
+\paragraph{Critic users.} We took the vector $\mbf p$ of average user offsets (from Model 3) and used it to split the users into three groups: positive, negative and fair. We then used the partitioned ratings matrix to fit three factorization models using Model 3. The cluster information and results obtained can be found in Table \ref{tab:results_clusters}. We note that the average error did not change much for fair users. However, positive users saw a substantial improvement in MAE. This is likely a result of the positive bias in the ratings (many ratings are 5) and the fact that our prediction model clips the ratings to the interval $[0,5]$. More worrying, however, was the decrease in performance for negative users. Unlike with the positive users, this does not appear to result from clipping, but rather from intrinsic variance in the ratings from these users. This suggests that it would be useful to employ different levels of regularization depending on the average offset of the user (future work).
 
 \paragraph{Businesses.} Interestingly, the number of ratings businesses have does not appear to correlate positively with prediction accuracy (in the extremes of performance). We considered businesses with high accuracy predictions (RMSE$\leq$0.5) and those with low (RMSE$\geq$1.5). The set of low accuracy businesses had, on average, about 18 reviews, while the high accuracy set had about 13. However, we did see the same pattern as in users in the sense that the high accuracy set had a high average rating ($\approx4.1$) while the low average set had a lower rating ($\approx3.2$).
 
 \subsection{Imputation}  
-Given Model 3 proved to be the most successful of the three MF models considered, we attempted to better account for priors by filling in random ratings for users with 5 or less reviews (until they totalled 5 reviews). The filled-in values were just the business averages. Fitting Model 3 to this new ratings matrix resulted in modest improvements (see TABLE XYZXYZXYZ), and it is possible that picking the number of reviews to fill in more carefully could yield greater improvements. 
+Given Model 3 proved to be the most successful of the three MF models considered, we attempted to better account for priors by filling in random ratings for users with 5 or less reviews (until they totalled 5 reviews). The filled-in values were just the business averages. Fitting Model 3 to this new ratings matrix resulted in modest improvements (see Table \ref{tab:results}), and it is possible that picking the number of reviews to fill in more carefully could yield greater improvements. 
 
 
 
@@ -99,12 +97,12 @@ Given Model 3 proved to be the most successful of the three MF models considered
           & Parameters & RMSE  & MAE \\
     \midrule
     Model 1 & $\lambda=0.05$,$f=20$ & 1.3359 & 1.021 \\
-    Model 2 & $\lambda=0.3$,$f=20$ & 1.2033 & 0.9113 \\
-    Model 3 & $\lambda=0.2$,$f=20$ & 1.1913 & 0.9163 \\
-    Model 3 + Imputation & $\lambda=0.2$,$f=10$ & 1.1772 & 0.903 \\
+    Model 2 & $\lambda=0.30$,$f=20$ & 1.2033 & 0.9113 \\
+    Model 3 & $\lambda=0.20$,$f=20$ & 1.1913 & 0.9163 \\
+    Model 3 + Imputation & $\lambda=0.20$,$f=10$ & 1.1772 & 0.903 \\
     Linear Model & $\theta$ & 0.9229 & 0.7049 \\
     Linear Model (Lasso) & $\theta$ & 1.2616 & 1.0174 \\
-    Linear Model (Ridge) & $\theta$ & 0.923 & 0.7048 \\
+    Linear Model (Ridge) & $\theta$ & 0.9230 & 0.7048 \\
     Model BL & None & 1.1517 & 0.8972 \\
     \bottomrule
     \end{tabular}%
