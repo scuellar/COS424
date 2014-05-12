@@ -54,7 +54,7 @@ class Business(list):
         self.vec["Good For Groups"] = attributes.get("Good For Groups")
         self.vec["Price Range"] = attributes.get("Price Range", -100)
         if self.vec["Price Range"] is None:
-            print self.name
+            print "Price range is None in: ", self.name
         
         good_for = attributes.get("Good For", {})
         self.makeGoodFor(good_for)
