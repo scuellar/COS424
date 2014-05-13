@@ -36,18 +36,12 @@ def factorize_bias(A,k,lam,lrate,maxiter):
             j = order[k]
             row = rows[j]
             col = cols[j]
-            try:
-                e[j,0] = vals[j]-mymu-bu[row,0]-bb[0,col]-np.dot(W[row,:], H[:,col])
-                factor = e[j,0]* lrate 
-                W[row,:] = W[row,:] + np.dot(factor, np.transpose(H[:,col]) - np.dot(lam, W[row,:]) )
-                H[:,col] = H[:,col] + np.dot(factor, np.transpose(W[row,:]) - np.dot(lam, H[:,col]) ) 
-            except IndexError:
-                print "here is the error!"
-            try:
-                bu[row,0] = bu[row,0] + lrate*(e[j,0]-lam*bu[row,0])
-                bb[0,col] = bb[0,col] + lrate*(e[j,0]-lam*bb[0,col])
-            except IndexError:
-                print "here is the error!2"
+            e[j,0] = vals[j]-mymu-bu[row,0]-bb[0,col]-np.dot(W[row,:], H[:,col])
+            factor = e[j,0]* lrate 
+            W[row,:] = W[row,:] + np.dot(factor, np.transpose(H[:,col]) - np.dot(lam, W[row,:]) )
+            H[:,col] = H[:,col] + np.dot(factor, np.transpose(W[row,:]) - np.dot(lam, H[:,col]) ) 
+            bu[row,0] = bu[row,0] + lrate*(e[j,0]-lam*bu[row,0])
+            bb[0,col] = bb[0,col] + lrate*(e[j,0]-lam*bb[0,col])
         error = smallPrint(np.linalg.norm(e))
         log.append(error)
     print "Done factorizing. Aprox errors ", log, ". Size of matrix:", A.shape
@@ -62,6 +56,8 @@ def factorize_bias(A,k,lam,lrate,maxiter):
 #(W,H,mymu,bu,bb) = factorize_bias(N,10,0.2,.001,40)
 
 def smallPrint(number):
+    if number != number:
+        return number
     integer = int(number)
     if integer == 0:
         dec = int(10 * number)
