@@ -92,7 +92,7 @@ The results obtained for each of the models can be seen in Table \ref{tab:result
 Given Model 3 proved to be the most successful of the three MF models considered, we attempted to better account for priors by filling in random ratings for users with 5 or less reviews (until they totalled 5 reviews). The filled-in values were just the business averages. Fitting Model 3 to this new ratings matrix resulted in modest improvements (see Table \ref{tab:results}), and it is possible that picking the number of reviews to fill in more carefully could yield greater improvements. 
 
 \section{Clustering the businesses}
-We noticed, by reading some review, that people rate different kinds of business in radically different ways. %Maybe add examples? 
+We noticed, by reading some reviews, that people rate different kinds of business in radically different ways. %Maybe add examples? 
 We believe that due to such differences in the nature of business, a users review of hair salons might not correlate with it's preferences of pizza places\footnote{Admittedly there might be and interesting correlation! But we think it's not a linear relation that would help this project.}.
 With that in mind, we want to group similar business together end then try to produce separate predictions on each group. To do so, we use the businesses attributes, or meta-data, to cluster them.
 
