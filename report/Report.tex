@@ -45,10 +45,16 @@ problem, where we are given a sparse matrix of ratings that users have given to 
 	Applied to the matrix completion problem, the latent factor model attempts to factorize the ratings matrix into a set 
 	of user vectors and item vectors, where the elements of the item vector can be interpreted as how much a specific factor characterizes the item, while elements 
 	of the user vector represents how much the user likes items high on the corresponding factor. 
+	
+In this project we aim to study the performance of several of these recommendation methods on the \emph{Yelp Dataset}. This work is particularly interesting because, to the best of our knowledge, there is no successful recommendation system for this dataset. We will focus on comparing standard models of recommendation and trying to improve them using the data set metadata.
+
+In section \ref{models} we present the models we considered and in section \ref{errors} we compare the results and analyze the errors. In section \ref{clust} we use metadata to group similar business and try to solve the problem on those smaller sets. In section \ref{conc} we discuss our results and conclude.
+
+
 
 
 % Section 2. Models
-\section{Models}
+\section{Models}\label{models}
 
 Matrix factorization (MF) methods have been extensively used in recommender systems \cite{koren09}. The idea is that we can characterize users and businesses by a feature vector in the same (relatively) low-dimensional latent space. Ideally, the features would represent meaningful dimensions that determine the characteristics of a business or user. However, matrix factorization techniques usually result in uninterpretable features. 
 
@@ -80,7 +86,7 @@ where $q_j$ now represents the average rating for business $j$ and $p_i$ is the 
 \paragraph{Linear Models (including Lasso and Ridge)} We include three Linear Models to test their performance in comparison to the MF techniques. The prediction equation is simply $\hat r_{ij}=\mbf x_{ij}^T\boldsymbol\theta$ with parameter vector including: average rating from user $i$, average rating received by business $j$ and a collection of meta-data about business $j$. The model is fitted using MLE. The Lasso model is regularized using the $\ell_1$-norm, which seeks a sparse solution that picks out the most meaningful features that constitute the regressor set. The Ridge model is regularized using the $\ell_2$-norm, which seeks to reduce the size of the coefficients and prevent overfitting.
 
 % subsection on error analysis
-\subsection{Results and Error Analysis}
+\subsection{Results and Error Analysis}\label{errors}
 The parameters $\lambda$ and the number of latent factors were chosen through 10-fold cross-validation. Two metrics were considering for assessing the quality of the model: root mean squared error (RMSE) and mean absolute error (MAE). We also computed precision for the best out of our three MF models, as well as for the BL model.
 
 The results obtained for each of the models can be seen in Table \ref{tab:results} below. We note that the factorized models fared worse than the simple baseline model. Below, we address some of the reasons that may explain these results.
@@ -97,7 +103,7 @@ Given Model 3 proved to be the most successful of the three MF models considered
 \subsection{Linear Models}
 The linear models we introduced each achieve comparable performance to the factorized models. In particular, the linear model and ridge nodel both perform as well as the imputation model, though still not as well as the Model BL either in terms of RMSE or MAE.
 
-\section{Clustering the businesses}
+\section{Clustering the businesses}\label{clust}
 We noticed, by reading some reviews, that people rate different kinds of business in radically different ways. %Maybe add examples? 
 We believe that due to such differences in the nature of businesses, a user's review of a hair salon might not correlate with their preference of pizza place\footnote{Admittedly there might be an interesting correlation! But we think it's not a linear relation that would help this project.}.
 With that in mind, we want to group similar businesses together and then try to produce separate predictions on each group. To do so, we use the businesses' attributes, or meta-data, to cluster them.
@@ -121,7 +127,7 @@ Some of the numeric results are summarized in table \ref{clustersFact}. Some clu
 
 We did not find any relationship between the performance of the factorization and the size of the matrix, the category of the cluster or the number of samples on the test set. 
 
-\section{Conclusion}
+\section{Conclusion}\label{conc}
 
 In this project we explored the problem of matrix completion using a very sparse dataset of businesses and user reviews. We made extensive use of matrix factorization, with overall poor results. Incorporating the meta-data about the businesses through clustering did not improve the performance of the MF techniques. In most cases, the results worsened.
 
@@ -198,21 +204,19 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
 \end{table}%
 
 \begin{figure}
-	\centering
+	\center
 	\includegraphics[scale=0.5]{user_offsets.png}
 	\caption{Histogram of average user offsets in the training set.}
 	\label{fig:user_offsets}
 \end{figure}
 
 \begin{figure}
-	\centering
+	\center
 	\includegraphics[scale=0.5]{hist_ratings.png}
 	\caption{Histogram of ratings in the dataset.}
 	\label{fig:hist_ratings}
 \end{figure}
 
-
-\newpage 
 % Table generated by Excel2LaTeX from sheet 'Sheet2'
 \begin{table}[htbp]
   \centering\scalebox{1}{
@@ -268,6 +272,7 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
     \bottomrule
     \end{tabular}%
 }\caption {Some examples of clusters}\label{clusters2}\end{table}%
+
 
 
 
