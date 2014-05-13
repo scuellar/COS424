@@ -7,6 +7,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{hyperref}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\E}[1]{E\left[ #1 \right]}
@@ -128,7 +129,7 @@ We believe one of the main reasons for this poor performance arises from the lar
 
 The MF models appear to require extensive fine-tuning of parameters, which is not the case with simpler models (such as a linear regression model). It is unclear whether more careful parameter tuning would make the MF methods competitive. However, the linear models requires little tuning and produced comparable results with considerably lower computational requirements, making them a more attractive option for solving the recommendation problem.
 
-\section{Bibliography}
+%\section{Bibliography}
 \begin{thebibliography}{9}
 
 \bibitem{lamport94}
@@ -137,6 +138,19 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
   Information Theory, IEEE Transactions on
   p. 129-137
   1982.
+
+\bibitem{koren09}
+  Koren, Y., Bell, R., and Volinsky, C
+  \emph{Matrix Factorization Techniques for Recommender Systems}
+  Computer
+  p. 30-37
+  2009.
+
+\bibitem{funk06}
+  Funk, S.
+  \emph{Netflix Update: Try This at Home}
+  \url{http://sifter.org/~simon/journal/20061211.html}
+  Dec, 2006.
 
 \end{thebibliography}
 %\end{multicols}
