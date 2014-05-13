@@ -31,7 +31,7 @@
 \author{Jonathan Balkind -- Santiago Cu\'ellar -- Jos\'e Ferreira -- Alex Tarr} 
 \maketitle
 
-\begin{multicols}{2}
+%\begin{multicols}{2}
 
 % Section 1. Introduction
 \section{Introduction} 
@@ -46,12 +46,12 @@ problem, where we are given a sparse matrix of ratings that users have given to 
 	of the user vector represents how much the user likes items high on the corresponding factor. 
 
 
-% Section 2. Factorization
-\section{Factorization}
+% Section 2. Models
+\section{Models}
 
 Matrix factorization (MF) methods have been extensively used in recommender systems. The idea is that we can characterize users and businesses by a feature vector in the same (relatively) low-dimensional latent space. Ideally, the features would represent meaningful dimensions that determine the characteristics of a business or user. However, matrix factorization techniques usually result in uninterpretable features. 
 
-Nevertheless, in some sense, they perform operations akin to a singular value decomposition (SVDs) with the added advantages that it does not require a dense matrix , and that it is substantially less computationally expensive. SVD would require one to guess the missing values (inputation), as well as adding great computational expense to the problem. We next present the models used to assess the applicability of matrix factorization to the problem at hand (more details can be found in the Technical Appendix).
+Nevertheless, in some sense, they perform operations akin to a singular value decomposition (SVDs) with the added advantages that it does not require a dense matrix , and that it is substantially less computationally expensive. SVD would require one to guess the missing values (imputation), as well as adding great computational expense to the problem. We next present the models used to assess the applicability of matrix factorization to the problem at hand (more details can be found in the Technical Appendix).
 
 \paragraph{Model 1.} In sum, we want to factorize the very large sparse ratings matrix of users \emph{vs.} businesses into two oblong matrices $\mbf U\in\mathbb{R}^{n_u\times f}$ and $\mbf B\in\mathbb{R}^{n_b\times f}$, where $f$ is the number of latent factors. The important point is that we only wish to consider the ratings that we do have (thus ignoring all the unknown ratings). Therefore, we wish to find $\mbf U$ and $\mbf B$ that solve the following optimization problem:
 \begin{equation}
@@ -76,6 +76,8 @@ where $q_j$ now represents the average rating for business $j$ and $p_i$ is the 
 
 \paragraph{Model BL.} In order to directly assess the effectiveness of the matrix factorization technique, we compared the results against a baseline model using Model 3's framework without the factorized matrices. This requires no optimization.
 
+\paragraph{Linear Models (including Lasso and Ridge)} We include three Linear Models to test their performance in comparison to the MF techniques. The prediction equation is simply $\hat r_{ij}=\mbf x_{ij}^T\boldsymbol\theta$ with parameter vector including: average rating from user $i$, average rating received by business $j$ and a collection of meta-data about business $j$. The model is fitted using MLE. The Lasso model is regularized using the $\ell_1$-norm, which seeks a sparse solution that picks out the most meaningful features that constitute the regressor set. The Ridge model is regularized using the $\ell_2$-norm, which seeks to reduce the size of the coefficients and prevent overfitting.
+
 % subsection on error analysis
 \subsection{Results and Error Analysis}
 The parameters $\lambda$ and the number of latent factors were chosen through 10-fold cross-validation. Two metrics were considering for assessing the quality of the model: root mean squared error (RMSE) and mean absolute error (MAE). The former has been the metric of choice for recommender systems at large, but we found that the latter also provides interesting insight into the performance of the models. 
@@ -91,23 +93,26 @@ The results obtained for each of the models can be seen in Table \ref{tab:result
 \subsection{Imputation}  
 Given Model 3 proved to be the most successful of the three MF models considered, we attempted to better account for priors by filling in random ratings for users with 5 or less reviews (until they totalled 5 reviews). The filled-in values were just the business averages. Fitting Model 3 to this new ratings matrix resulted in modest improvements (see Table \ref{tab:results}), and it is possible that picking the number of reviews to fill in more carefully could yield greater improvements. 
 
+\subsection{Linear Models}
+The linear models we introduced each achieve comparable performance to the factorized models. In particular, the linear model and ridge nodel both perform as well as the imputation model, though still not as well as the Model BL either in terms of RMSE or MAE.
+
 \section{Clustering the businesses}
 We noticed, by reading some reviews, that people rate different kinds of business in radically different ways. %Maybe add examples? 
-We believe that due to such differences in the nature of business, a users review of hair salons might not correlate with it's preferences of pizza places\footnote{Admittedly there might be and interesting correlation! But we think it's not a linear relation that would help this project.}.
-With that in mind, we want to group similar business together end then try to produce separate predictions on each group. To do so, we use the businesses attributes, or meta-data, to cluster them.
+We believe that due to such differences in the nature of businesses, a user's review of a hair salon might not correlate with their preference of pizza place\footnote{Admittedly there might be an interesting correlation! But we think it's not a linear relation that would help this project.}.
+With that in mind, we want to group similar businesses together and then try to produce separate predictions on each group. To do so, we use the businesses' attributes, or meta-data, to cluster them.
 
-The business meta-data is a list of attributes that describe some of its characteristics. Most of the entries are boolean values such as \emph{Wheelchair Accessible} or \emph{Accepts Credit Cards}. Some other entries are natural numbers, such as \emph{review count} and \emph{Price Range}, or more general such as \emph{Hours}--wich describes hours of service. Moreover, business can have a section with categories such as \emph{Women's Clothing} or \emph{Mexican food}.
+The business meta-data is a list of attributes that describe some of its characteristics. Most of the entries are boolean values such as \emph{Wheelchair Accessible} or \emph{Accepts Credit Cards}. Some other entries are natural numbers, such as \emph{review count} and \emph{Price Range}, or more general such as \emph{Hours}--wich describes hours of service. Moreover, businesses can have a section with categories such as \emph{Women's Clothing} or \emph{Mexican food}.
 
-The main challenge here is that most businesses have their metadata incomplete. Moreover, most of the attributes are only applicable to restaurant, such as \emph{Good for lunch} or \emph{takes reservations}\footnote{some hair salons take reservations, but you get the point.}. On the other hand, most business have categories, but each business is in many of the more than 500 categories. So categories alone was not enough for classification. 
+The main challenge here is that most businesses have their metadata incomplete. Moreover, most of the attributes are only applicable to restaurants, such as \emph{Good for lunch} or \emph{takes reservations}\footnote{some hair salons take reservations, but you get the point.}. On the other hand, most businesses have categories, but each business is in many of the more than 500 categories. So categories alone were not enough for classification. 
 
-Our solution was to encode all the meta-data available in a feature vector for each business and use a clustering algorithm with that information. The feature vectors have more than 600 entries and we computed 30 clusters. We use the standard Lloyd's algorithm to perform k-means clustering on the business.  
+Our solution was to encode all the meta-data available in a feature vector for each business and use a clustering algorithm with that information. The feature vectors have more than 600 entries and we computed 30 clusters. We use the standard Lloyd's algorithm to perform k-means clustering on the businesses.  
 
-A sample of the results can be observed in table \ref{clusters2}. Just like the sample presented in the cluster every had very similar businesses with some clear features in common. Our algorithm distinguished very particular categories into a single cluster, such as \emph{hospitals} but also manage to merge similar categories such as \emph{chicken wings} and \emph{sandwiches}.
+A sample of the results can be observed in table \ref{clusters2}. Just like the sample presented in the cluster every had very similar businesses with some clear features in common. Our algorithm distinguished very particular categories into a single cluster, (such as \emph{hospitals}) but also managed to merge similar categories such as \emph{chicken wings} and \emph{sandwiches}.
 
 
 \section{Factorizing the clusters}
 
-Once we separated our businesses into groups of similar attributes, we try to solve the original problem on each individual cluster. To do so, we create new sparse matrices for each group and factorize them with method 2, described above. 
+Once we separated our businesses into groups of similar attributes, we tried to solve the original problem on each individual cluster. To do so, we create new sparse matrices for each group and factorize them with method 2 described above. 
 
 The first clear improvement was on the runtime and the memory requirements. Since the matrices are much smaller, they take less space in memory (around $\frac{1}{30}$ of the memory) and they can be factored in parallel, making the factorization process about 5 times faster. We think this is crucial to make this algorithm scalable, but we will not go into a detailed analysis of the runtimes in this project.
 
@@ -121,7 +126,7 @@ In this project we explored the problem of matrix completion using a very sparse
 
 We believe one of the main reasons for this poor performance arises from the large number of users with very few reviews. There is also a large positive bias in reviews, which improves the results for highly rated businesses, but damages the overall fit of the model. 
 
-The MF models appear to require extensive fine-tuning of parameters, which is not the case with simpler models (such as a linear regression model). It is unclear whether more careful parameter tuning would make the MF methods competitive.
+The MF models appear to require extensive fine-tuning of parameters, which is not the case with simpler models (such as a linear regression model). It is unclear whether more careful parameter tuning would make the MF methods competitive. However, the linear models requires little tuning and produced comparable results with considerably lower computational requirements, making them a more attractive option for solving the recommendation problem.
 
 \section{Bibliography}
 \begin{thebibliography}{9}
@@ -134,7 +139,7 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
   1982.
 
 \end{thebibliography}
-\end{multicols}
+%\end{multicols}
 
 \newpage 
 % Table generated by Excel2LaTeX from sheet 'Sheet2'
@@ -209,9 +214,9 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
     Model 2 & $\lambda=0.30$,$f=20$ & 1.2033 & 0.9113 \\
     Model 3 & $\lambda=0.20$,$f=20$ & 1.1913 & 0.9163 \\
     Model 3 + Imputation & $\lambda=0.20$,$f=10$ & 1.1772 & 0.903 \\
-    Linear Model & $\theta$ & 0.9229 & 0.7049 \\
-    Linear Model (Lasso) & $\theta$ & 1.2616 & 1.0174 \\
-    Linear Model (Ridge) & $\theta$ & 0.9230 & 0.7048 \\
+    Linear Model & $\theta$ & 1.1754 & 0.9073 \\
+    Linear Model (Lasso) & $\theta$ & 1.2523 & 1.0104 \\
+    Linear Model (Ridge) & $\theta$ & 1.1753 & 0.9074 \\
     Model BL & None & 1.1517 & 0.8972 \\
     \bottomrule
     \end{tabular}%
