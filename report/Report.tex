@@ -35,6 +35,15 @@
 
 % Section 1. Introduction
 \section{Introduction} 
+Many companies working in e-commerce (Amazon), internet streaming (Netflix, Hulu), and business review sites (Yelp, Groupon) seek 
+to make personalized recommendations to their users in order to enhance the user's experience. This is accomplished by recommendation systems, 
+which use the knowledge of its users and items to make guesses on what items the user would enjoy. This problem is formulated as a matrix completion 
+problem, where we are given a sparse matrix of ratings that users have given to items and seek to estimate the missing entries.
+	One popular method used for recommendation systems is the latent factor model, which is a popular collaborative filtering method that found great 
+	success in the well-known Netflix problem. This method seeks to characterize items and users on a set of unknown factors inferred from the rating patterns. 
+	Applied to the matrix completion problem, the latent factor model attempts to factorize the ratings matrix into a set 
+	of user vectors and item vectors, where the elements of the item vector can be interpreted as how much a specific factor characterizes the item, while elements 
+	of the user vector represents how much the user likes items high on the corresponding factor. 
 
 
 % Section 2. Factorization
