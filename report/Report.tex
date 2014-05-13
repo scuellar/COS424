@@ -50,7 +50,7 @@ problem, where we are given a sparse matrix of ratings that users have given to 
 % Section 2. Models
 \section{Models}
 
-Matrix factorization (MF) methods have been extensively used in recommender systems. The idea is that we can characterize users and businesses by a feature vector in the same (relatively) low-dimensional latent space. Ideally, the features would represent meaningful dimensions that determine the characteristics of a business or user. However, matrix factorization techniques usually result in uninterpretable features. 
+Matrix factorization (MF) methods have been extensively used in recommender systems \cite{koren09}. The idea is that we can characterize users and businesses by a feature vector in the same (relatively) low-dimensional latent space. Ideally, the features would represent meaningful dimensions that determine the characteristics of a business or user. However, matrix factorization techniques usually result in uninterpretable features. 
 
 Nevertheless, in some sense, they perform operations akin to a singular value decomposition (SVDs) with the added advantages that it does not require a dense matrix , and that it is substantially less computationally expensive. SVD would require one to guess the missing values (imputation), as well as adding great computational expense to the problem. We next present the models used to assess the applicability of matrix factorization to the problem at hand (more details can be found in the Technical Appendix).
 
@@ -69,7 +69,7 @@ where $K$ is the set of non-empty ratings in the matrix and the $\mbf u_i$ and $
 \end{equation}
 where $\mbf p$ and $\mbf q$ represent average user and business biases, respectively, and $\mu$ is the global average rating. The optimization problem to be solved changes accordingly, and is now over $\mbf U$, $\mbf B$, $\mbf p$ and $\mbf q$ (see Technical Appendix for details).
 
-\paragraph{Model 3.} Another model one can consider stems from the realization that business average ratings tend to represent a better baseline than user ratings in the Yelp dataset (as there is a large number of users that have a small amount of ratings). As such, it is helpful to consider a prediction model of the following form:
+\paragraph{Model 3.} Another model one can consider stems from the realization that business average ratings tend to represent a better baseline than user ratings in the Yelp dataset (as there is a large number of users that have a small amount of ratings). As such, it is helpful to consider a prediction model of the following form \cite{funk06}:
 \begin{equation}
 \hat r_{ij} =  p_i + q_j + \mbf u_i^T\mbf b_j
 \end{equation}
@@ -81,13 +81,13 @@ where $q_j$ now represents the average rating for business $j$ and $p_i$ is the 
 
 % subsection on error analysis
 \subsection{Results and Error Analysis}
-The parameters $\lambda$ and the number of latent factors were chosen through 10-fold cross-validation. Two metrics were considering for assessing the quality of the model: root mean squared error (RMSE) and mean absolute error (MAE). The former has been the metric of choice for recommender systems at large, but we found that the latter also provides interesting insight into the performance of the models. 
+The parameters $\lambda$ and the number of latent factors were chosen through 10-fold cross-validation. Two metrics were considering for assessing the quality of the model: root mean squared error (RMSE) and mean absolute error (MAE). We also computed precision for the best out of our three MF models, as well as for the BL model.
 
 The results obtained for each of the models can be seen in Table \ref{tab:results} below. We note that the factorized models fared worse than the simple baseline model. Below, we address some of the reasons that may explain these results.
 
 \paragraph{Sparsity.} While the popularity of MF methods came about in the context of sparse ratings matrices, we suspect that excessive sparsity has substantial negative impact on the performance of the model. In particular, 83\% of the users in the training set have less than 5 reviews to their name and 49\% have a single review. The text associated with these reviews is, more often than not, descriptive of either an excellent experience or a terrible one. It appears that many of the users have created accounts solely for the purpose of writing a single extreme review, the effect of which is not accurately portrayed by our models.
 
-\paragraph{Critic users.} We took the vector $\mbf p$ of average user offsets (from Model 3) and used it to split the users into three groups: positive, negative and fair. We then used the partitioned ratings matrix to fit three factorization models using Model 3. The cluster information and results obtained can be found in Table \ref{tab:results_clusters}. We note that the average error did not change much for fair users. However, positive users saw a substantial improvement in MAE. This is likely a result of the positive bias in the ratings (many ratings are 5) and the fact that our prediction model clips the ratings to the interval $[0,5]$. More worrying, however, was the decrease in performance for negative users. Unlike with the positive users, this does not appear to result from clipping, but rather from intrinsic variance in the ratings from these users. This suggests that it would be useful to employ different levels of regularization depending on the average offset of the user (future work).
+\paragraph{Critic users.} We took the vector $\mbf p$ of average user offsets from Model 3 and used it to split the users into three groups: positive, negative and fair (see Figure \ref{fig:user_offsets}). We then used the partitioned ratings matrix to fit three factorization models using Model 3. The cluster information and results obtained can be found in Table \ref{tab:results_clusters}. We note that the average error did not change much for fair users. However, positive users saw a substantial improvement in MAE. This is likely a result of the positive bias in the ratings, as seen in Figure \ref{fig:hist_ratings} and the fact that our prediction model clips the ratings to the interval $[0,5]$. More worrying, however, was the decrease in performance for negative users. Unlike with the positive users, this does not appear to result from clipping, but rather from intrinsic variance in the ratings from these users. This suggests that it would be useful to employ different levels of regularization depending on the average offset of the user (future work).
 
 \paragraph{Businesses.} Interestingly, the number of ratings businesses have does not appear to correlate positively with prediction accuracy (in the extremes of performance). We considered businesses with high accuracy predictions (RMSE$\leq$0.5) and those with low (RMSE$\geq$1.5). The set of low accuracy businesses had, on average, about 18 reviews, while the high accuracy set had about 13. However, we did see the same pattern as in users in the sense that the high accuracy set had a high average rating ($\approx4.1$) while the low average set had a lower rating ($\approx3.2$).
 
@@ -106,12 +106,12 @@ The business meta-data is a list of attributes that describe some of its charact
 
 The main challenge here is that most businesses have their metadata incomplete. Moreover, most of the attributes are only applicable to restaurants, such as \emph{Good for lunch} or \emph{takes reservations}\footnote{some hair salons take reservations, but you get the point.}. On the other hand, most businesses have categories, but each business is in many of the more than 500 categories. So categories alone were not enough for classification. 
 
-Our solution was to encode all the meta-data available in a feature vector for each business and use a clustering algorithm with that information. The feature vectors have more than 600 entries and we computed 30 clusters. We use the standard Lloyd's algorithm to perform k-means clustering on the businesses.  
+Our solution was to encode all the meta-data available in a feature vector for each business and use a clustering algorithm with that information. The feature vectors have more than 600 entries and we computed 30 clusters. We use the standard Lloyd's algorithm \cite{lamport94} to perform k-means clustering on the businesses.  
 
-A sample of the results can be observed in table \ref{clusters2}. Just like the sample presented in the cluster every had very similar businesses with some clear features in common. Our algorithm distinguished very particular categories into a single cluster, (such as \emph{hospitals}) but also managed to merge similar categories such as \emph{chicken wings} and \emph{sandwiches}.
+A sample of the results can be observed in table \ref{clusters2}. Just like the sample presented, each cluster featured, in general, very similar businesses with some clear features in common. Our algorithm distinguished very particular categories into a single cluster, (such as \emph{hospitals}) but also managed to merge similar categories such as \emph{chicken wings} and \emph{sandwiches}.
 
 
-\section{Factorizing the clusters}
+\subsection{Factorizing the clusters}
 
 Once we separated our businesses into groups of similar attributes, we tried to solve the original problem on each individual cluster. To do so, we create new sparse matrices for each group and factorize them with method 2 described above. 
 
@@ -119,7 +119,7 @@ The first clear improvement was on the runtime and the memory requirements. Sinc
 
 Some of the numeric results are summarized in table \ref{clustersFact}. Some clusters showed a significant improvement ( up to \emph{rmse} $= 1.1560$) and others performed much worse ( \emph{rmse} $= 1.7801$). The overall performance was not better than that of factorization on the entire matrix (\emph{rmse} $= 1.4638 $).
 
-We didn't find any relationship between the performance of the factorization and the size of the matrix, the category of the cluster or the number of samples on the test set. 
+We did not find any relationship between the performance of the factorization and the size of the matrix, the category of the cluster or the number of samples on the test set. 
 
 \section{Conclusion}
 
@@ -155,10 +155,67 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
 \end{thebibliography}
 %\end{multicols}
 
+
+
+% Results Appendix
+\newpage
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[htbp]
+  \centering
+  \caption{Best root mean squared error and mean absolute error results for each model (parameters chosen through 10-fold cross-validation).}
+    \begin{tabular}{rrrccc}
+    \toprule
+          & Parameters & RMSE  & MAE & Precision \\
+    \midrule
+    Model 1 & $\lambda=0.05$,$f=20$ & 1.3359 & 1.0210 & -- \\
+    Model 2 & $\lambda=0.30$,$f=20$ & 1.2033 & 0.9113 & --\\
+    Model 3 & $\lambda=0.20$,$f=20$ & 1.1913 & 0.9163 & 0.8266\\
+    Model 3 + Imputation & $\lambda=0.20$,$f=10$ & 1.1772 & 0.903  & --\\
+    Linear Model & $\theta$ & 1.1754 & 0.9073 & --\\
+    Linear Model (Lasso) & $\theta$ & 1.2523 & 1.0104 & -- \\
+    Linear Model (Ridge) & $\theta$ & 1.1753 & 0.9074 & --\\
+    Model BL & None & 1.1517 & 0.8972 & 0.8444 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:results}%
+\end{table}%
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[htbp]
+  \centering
+  \caption{Best root mean squared error and mean absolute error using Model 3 for three user clusters: positive ($\text{mean}(p_i)=0.44$), neutral ($\text{mean}(p_i)=0.03$), negative ($\text{mean}(p_i)=-0.67$).}
+    \begin{tabular}{rrr}
+    \toprule
+          & RMSE  & MAE \\
+    \midrule
+    Negative Users & 1.4567 & 1.1835 \\
+    Neutral Users & 1.1808 & 0.9098 \\
+    Positive Users & 1.1643 & 0.7957 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:results_clusters}%
+\end{table}%
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{user_offsets.png}
+	\caption{Histogram of average user offsets in the training set.}
+	\label{fig:user_offsets}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{hist_ratings.png}
+	\caption{Histogram of ratings in the dataset.}
+	\label{fig:hist_ratings}
+\end{figure}
+
+
 \newpage 
 % Table generated by Excel2LaTeX from sheet 'Sheet2'
 \begin{table}[htbp]
-  \centering\scalebox{1.3}{
+  \centering\scalebox{1}{
     \begin{tabular}{rcc}
     \toprule
           & RMSE  & MAE \\
@@ -211,47 +268,6 @@ The MF models appear to require extensive fine-tuning of parameters, which is no
     \bottomrule
     \end{tabular}%
 }\caption {Some examples of clusters}\label{clusters2}\end{table}%
-
-
-% Results Appendix
-\newpage
-
-% Table generated by Excel2LaTeX from sheet 'Sheet1'
-\begin{table}[htbp]
-  \centering
-  \caption{Best root mean squared error and mean absolute error results for each model (parameters chosen through 10-fold cross-validation).}
-    \begin{tabular}{rrrrr}
-    \toprule
-          & Parameters & RMSE  & MAE \\
-    \midrule
-    Model 1 & $\lambda=0.05$,$f=20$ & 1.3359 & 1.021 \\
-    Model 2 & $\lambda=0.30$,$f=20$ & 1.2033 & 0.9113 \\
-    Model 3 & $\lambda=0.20$,$f=20$ & 1.1913 & 0.9163 \\
-    Model 3 + Imputation & $\lambda=0.20$,$f=10$ & 1.1772 & 0.903 \\
-    Linear Model & $\theta$ & 1.1754 & 0.9073 \\
-    Linear Model (Lasso) & $\theta$ & 1.2523 & 1.0104 \\
-    Linear Model (Ridge) & $\theta$ & 1.1753 & 0.9074 \\
-    Model BL & None & 1.1517 & 0.8972 \\
-    \bottomrule
-    \end{tabular}%
-  \label{tab:results}%
-\end{table}%
-
-% Table generated by Excel2LaTeX from sheet 'Sheet1'
-\begin{table}[htbp]
-  \centering
-  \caption{Best root mean squared error and mean absolute error using Model 3 for three user clusters: positive ($\text{mean}(p_i)=0.44$), neutral ($\text{mean}(p_i)=0.03$), negative ($\text{mean}(p_i)=-0.67$).}
-    \begin{tabular}{rrr}
-    \toprule
-          & RMSE  & MAE \\
-    \midrule
-    Negative Users & 1.4567 & 1.1835 \\
-    Neutral Users & 1.1808 & 0.9098 \\
-    Positive Users & 1.1643 & 0.7957 \\
-    \bottomrule
-    \end{tabular}%
-  \label{tab:results_clusters}%
-\end{table}%
 
 
 
